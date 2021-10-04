@@ -82,6 +82,9 @@ Mainly the scripts will be running under python 3.
 
 3. Activate env: `conda activate p3` or `source activate p3`
 
+4. Install dependencies: 'pip install -r /omics/groups/OE0532/internal/from_snapshot/p3_packages.txt'
+
+
 ## 5. Virtual env for python2
 
 Python2 is mainly used by diricore and couple of more tools.
@@ -92,7 +95,7 @@ Python2 is mainly used by diricore and couple of more tools.
 
 3. Activate env: `conda activate diricore` or `source activate diricore`
 
-3. Install dependencies
+3. Install dependencies: 'pip install -r /omics/groups/OE0532/internal/Alex/diricore_packages.txt'
 
 ```
 pip install HTSeq==0.11.2 h5py==2.9.0 numpy==1.16.2 
