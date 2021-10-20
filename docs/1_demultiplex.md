@@ -211,7 +211,7 @@ Reads written (passing filters):   145,755,324 (71.5%)
 
 We can see that 98% of reads had an adapter sequence, which is perfect. 71,5% of the reads have been written. This is fine.
 
-> **_NOTE:_** If the number of written reads is too low, we can increase this number by selecting shorter reads. Default min length is 30. To decrease min length, re-run the script with an additional parameter: `bsub -q long -R "rusage[mem=35G]" $BASE_DIR/software/preprocessing/1_trim_adapter_and_demultiplex.sh 20910 24 25`, where 25 is the min read length. 
+> **_NOTE:_** If the number of written reads is too low, we can increase this number by selecting shorter reads. Default min length is 30. To decrease min length, re-run the script with an additional parameter: `bsub -q long -R "rusage[mem=35G]" $BASE_DIR/software/preprocessing/1_trim_adapter_and_demultiplex.sh 20910 25 24`, where 25 is the min read length. 
 
 > **_NOTE:_** it is NOT recommended to take reads shorter than 25. Because this length will be decreased even more in the next steps. 5nts will be removed as UMI, and 5nts will be removed as a barcode. So in the end we get a read with the length 15nts, which is not ideal for the alignment. 
 
