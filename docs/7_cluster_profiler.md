@@ -2,7 +2,10 @@
 
 > **_IMPORTANT:_** `$BASE_DIR` has to be specified in your `.bash_profile`. Details [here](docs/0_before_you_start.md)
 
-
+## 0. Load samtools
+```
+module load samtools
+```
 
 ## 1. Get sequences
 
