@@ -9,6 +9,7 @@
 ## 1. Create UCSC tracks
 
 ```
+module load samtools
 $BASE_DIR/software/ucsc/1_generate_ucsc_tracks.sh 21012 mm10 all_unique
 ```
 
