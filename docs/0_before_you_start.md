@@ -16,6 +16,8 @@ So, do the following:
 
 (and also run it in your terminal - if you want to use BASE_DIR immediately)
 
+Quit bash profile.
+
 3. Create a directory: `/omics/groups/OE0532/internal/YOUR_DIR`
 
 4. Create a symlink to access static data: `ln -s /omics/groups/OE0532/internal/from_snapshot/static /omics/groups/OE0532/internal/YOUR_DIR/`
