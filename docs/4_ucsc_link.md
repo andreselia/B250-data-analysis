@@ -101,6 +101,8 @@ Make sure that the correct genome version is selected.
 
 ### 4.4. Open tracks in the UCSC browser
 
+Click 'Go'
+
 ![](/pics/ucsc_4.png)
 
 ### 4.5 View the results
