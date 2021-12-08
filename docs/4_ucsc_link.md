@@ -81,7 +81,7 @@ Uploading /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/all_un
 
 Alternatively, use FileZilla to manually transfer all files.
 Install basic (free) FileZilla version and connect to ftp.dkfz-heidelberg.de
-Load corresponding .bw files from cluster to local system. **_IMPORTANT:_** Create same directory path as written in ucsc_track_annotation.txt file!
+Load corresponding .bw files from cluster to local system. **_IMPORTANT:_** Create directory path on your local system (same as from ucsc_track_annotation.txt file!)
 Copy .bw files to the newly created directory. 
 
 **_In FileZilla:_** Navigate to local directory in the left panel. Drag and Drop the parent directory ('/B250/...') to outgoing panel on the right.
