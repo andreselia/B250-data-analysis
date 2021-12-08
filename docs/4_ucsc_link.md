@@ -73,6 +73,7 @@ Uploading /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/all_un
 Uploading /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/all_unique/S5_CoC_GFP_LG_minus.bw
 Uploading /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/all_unique/S8_MEF_LC_minus.bw
 ```
+Alternatively, use FileZilla to manually transfer all files.
 
 > **_NOTE:_** DKFZ FTP-server stores files for a certain period of time, and then deletes them. 
 
