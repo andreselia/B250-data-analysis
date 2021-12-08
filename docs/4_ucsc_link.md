@@ -43,6 +43,7 @@ Created file: /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/al
 ```
 
 ## 3. Upload tracks to the FTP
+## 3.1 Script-mediated
 
 ```
 python $BASE_DIR/software/ucsc/3_ucsc_tracks_to_ftp.py 21012 all_unique
@@ -73,7 +74,16 @@ Uploading /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/all_un
 Uploading /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/all_unique/S5_CoC_GFP_LG_minus.bw
 Uploading /icgc/dkfzlsdf/analysis/OE0532/21012/analysis/output/gen_tracks/all_unique/S8_MEF_LC_minus.bw
 ```
+
+## 3.2 FileZilla
 Alternatively, use FileZilla to manually transfer all files.
+Install basic (free) FileZilla version and connect to ftp.dkfz-heidelberg.de
+Load corresponding .bw files from cluster to local system. Important: Create same directory path as written in ucsc_track_annotation.txt file!
+Copy .bw files to the newly created directory. 
+
+In FileZilla: Navigate to local directory in the left panel. Drag and Drop the parent directory ('/B250/...') to outgoing panel on the right.
+The directory pathway will be created in FileZilla. 
+
 
 > **_NOTE:_** DKFZ FTP-server stores files for a certain period of time, and then deletes them. 
 
