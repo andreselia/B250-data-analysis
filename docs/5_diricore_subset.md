@@ -21,6 +21,11 @@ MT-ND6
 
 ## 0. Create a reference file - skip if already done
 
+Transfer gene symbols to ENSEMBL transcript IDs via BioMart Tool from ENSEMBL.
+Using 'Filter', expand 'Gene', enter your gene list. Choose HGNC symbols as external reference ID list input (e.g. 'MT-ND6).
+Using 'Attributes', expand 'Gene' and check/uncheck the list output parameters.
+Export and format the final list for the column of interest.
+
 ```
 cat $BASE_DIR/static/hg19/MT-genes.txt | cut -d '|' -f 1 > $BASE_DIR/static/hg19/MT-transcripts.txt
 ```
@@ -42,7 +47,7 @@ New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subs
 ## 3. Run rpf density analysis: 
 
 ```
-bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/rpf_density_analysis.sh 18436 hg19 5 all_MT-transcrips
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/rpf_density_analysis.sh 18436 hg19 5 all_MT-transcripts
 ```
 
 ## 4. Subsequence analysis:
@@ -73,7 +78,7 @@ Perform the analysis as described above.
 
 ## 2. Difference between MT and cytosolic genes in subsequence analysis
 
-Becase a few codons are different in cytosolic genes and MT-genes, there are 2 subsequence scripts. They output the same data files, but the plotting function is different due to the codons annotation. 
+Because a few codons are different in cytosolic genes and MT-genes, there are 2 subsequence scripts. They output the same data files, but the plotting function is different due to the codons annotation. 
 
 ### 2.1 Subsequence plots for the cytosolic genes: 
 
