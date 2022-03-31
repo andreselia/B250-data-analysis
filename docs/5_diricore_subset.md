@@ -29,6 +29,10 @@ Export and format the final list for the column of interest.
 ```
 cat $BASE_DIR/static/hg19/MT-genes.txt | cut -d '|' -f 1 > $BASE_DIR/static/hg19/MT-transcripts.txt
 ```
+or
+
+```cat filename | sed 1d > filename_without_first_line
+cat Histone.txt | cut -f2 > Histone_t.txt```
 
 ## 1. Load samtools
 
