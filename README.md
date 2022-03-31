@@ -39,6 +39,8 @@ This is a step-by-step tutorial for analysing the Ribosome-Profiling (and other)
 
 16. [RPF Coverage metaplot](docs/17_rpf_coverage_metaplot.md)
 
+17. [Prepare gene list](docs/17_gene_list.md)
+
 
 ## Simple data extraction / simpe plots
 
