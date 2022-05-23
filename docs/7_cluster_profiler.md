@@ -1,6 +1,7 @@
 # Cluster Profiler (GO term)
 
 > **_IMPORTANT:_** `$BASE_DIR` has to be specified in your `.bash_profile`. Details [here](docs/0_before_you_start.md)
+> ClusterProfiler requires the rpf_density_samplenames/contrasts file! 
 
 ## 0. Load samtools
 ```
