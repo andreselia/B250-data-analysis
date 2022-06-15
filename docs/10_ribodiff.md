@@ -70,10 +70,14 @@ bsub -q medium -R "rusage[mem=30G]" $BASE_DIR/software/ext_diricore/1_get_seq_fr
 
 coding genes: 
 
+human
 ```
 while read -r contrast; do echo "bsub -q medium -R \"rusage[mem=30G]\" python $BASE_DIR/software/ribo_diff/aggregate_counts2.py 21221_RNA 21221 all_unique $contrast"; done < $BASE_DIR/21221/analysis/input/metadata/rpf_density_contrasts.tsv
 ```
-
+mouse
+```
+Alex/scripts/aggregate_counts2_mouse.py
+```
 
 ## 3. Create metafiles
 
