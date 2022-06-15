@@ -74,7 +74,7 @@ human
 ```
 while read -r contrast; do echo "bsub -q medium -R \"rusage[mem=30G]\" python $BASE_DIR/software/ribo_diff/aggregate_counts2.py 21221_RNA 21221 all_unique $contrast"; done < $BASE_DIR/21221/analysis/input/metadata/rpf_density_contrasts.tsv
 ```
-mouse
+mouse script (combine with upper while command)
 ```
 Alex/scripts/aggregate_counts2_mouse.py
 ```
