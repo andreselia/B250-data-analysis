@@ -27,6 +27,7 @@ This will create 2 files `plastid_rois.bed` and `plastid_rois.txt` at the static
 Get sequences: 
 
 ```
+module load samtools
 bsub -R "rusage[mem=10G]" $BASE_DIR/software/ext_diricore/1_get_seq_from_bam.sh 22276 all_unique
 ```
 
