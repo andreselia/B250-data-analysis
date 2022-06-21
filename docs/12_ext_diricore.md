@@ -237,6 +237,7 @@ done
 
 3. Extract reads from genome bams: 
 
+Submit as cluster job!
 ```
 for f in $(ls $BASE_DIR/22276/analysis/output/diricore_subset/bam_ids/all_unique_MT-genes/*txt); 
     do fn=$(basename $f); 
