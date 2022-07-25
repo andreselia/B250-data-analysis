@@ -33,6 +33,8 @@ This is a step-by-step tutorial for analysing the Ribosome-Profiling (and other)
 
 13. [RiboDiff (Translational Efficiency)](docs/10_ribodiff.md) 
 
+14. [RiboDiff / DTEG / Pseudo-Replicates](docs/18_ribodiff_dteg.md)
+
 14. [Ext Diricore (P-site signalling)](docs/12_ext_diricore.md)
 
 15. [RPF Coverage (1x, 2x, 3x codons)](docs/15_rpf_coverage.md)
