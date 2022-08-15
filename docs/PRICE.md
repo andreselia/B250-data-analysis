@@ -1,6 +1,6 @@
 # PRICE
 
-This file aims to document the handling of PRICE (Probabilistic inference of codon activities by an EM algorithm) in the B250 department of DKFZ Heidelberg.
+This file aims to document the handling of PRICE (Probabilistic inference of codon activities by an EM algorithm) in the B250 department of DKFZ Heidelberg. Please check the original documentation of the Erhard Lab: https://github.com/erhard-lab/gedi/wiki/Price#preparing-a-reference
 
 ## 1. Re-Align fastq files
 ```
