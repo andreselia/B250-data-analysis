@@ -30,11 +30,11 @@ cd /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/output
 
 ## 6. Run PRICE
 ```
-for i in $(ls /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/input); do echo "bsub -q medium -R "rusage[mem=30G]" /omics/groups/OE0532/internal/Alex/scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/${i} -genomic hg19 -prefix ${i}/${i} -progress -plot"; done
+for i in $(ls /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/input); do echo "bsub -q long -R "rusage[mem=30G]" /omics/groups/OE0532/internal/Alex/scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/${i} -genomic hg19 -prefix ${i}/${i} -progress -plot"; done
 ```
 Submit to cluster
 ```
-bsub -q medium -R rusage[mem=10G] /omics/groups/OE0532/internal/Alex//scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/MCF7_Ctrl_toGenome.bam -genomic hg19 -prefix MCF7_Ctrl_toGenome.bam/MCF7_Ctrl_toGenome.bam -progress -plot
+bsub -q long -R rusage[mem=10G] /omics/groups/OE0532/internal/Alex//scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/MCF7_Ctrl_toGenome.bam -genomic hg19 -prefix MCF7_Ctrl_toGenome.bam/MCF7_Ctrl_toGenome.bam -progress -plot
 ```
 
 PRICE will output various plots and files in the prefix-named dir. The most important file *${prefix}.orfs.tsv* contains all the information about all called ORFs.
