@@ -41,18 +41,20 @@ This is a step-by-step tutorial for analysing the Ribosome-Profiling (and other)
 
 16. [RPF Coverage metaplot](docs/17_rpf_coverage_metaplot.md)
 
-17. [Prepare gene list](docs/17_gene_list.md)
+17. [PRICE](docs/PRICE.md)
 
 
 ## Simple data extraction / simpe plots
 
-17. [Normalized counts](docs/9_normalized_counts.md)
+17. [Prepare gene list](docs/17_gene_list.md)
 
-18. [Read size distribution](docs/11_size_distribution.md)
+18. [Normalized counts](docs/9_normalized_counts.md)
 
-19. [Cumulative plots](docs/13_cumulative_plots.md)
+19. [Read size distribution](docs/11_size_distribution.md)
 
-20. [PCA plot](docs/16_pca.md)
+20. [Cumulative plots](docs/13_cumulative_plots.md)
+
+21. [PCA plot](docs/16_pca.md)
 
 ...
 
