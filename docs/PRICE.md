@@ -31,6 +31,11 @@ cd /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/output
 
 ## 6. Run PRICE
 ```
+module load R/4.2.0
+module load java
+```
+
+```
 for i in $(ls /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/input); do echo "bsub -q long -R "rusage[mem=30G]" /omics/groups/OE0532/internal/Alex/scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/${i} -genomic hg19 -prefix ${i}/${i} -progress -plot"; done
 ```
 Submit to cluster
