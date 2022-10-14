@@ -52,7 +52,7 @@ export PS1='\u@\H:\w$ ';
 export PS1="\[${cyan}\](\$(basename \$CONDA_DEFAULT_ENV 2> /dev/null)) "$PS1;
 
 # BASE_DIR
-export BASE_DIR="/omics/groups/OE0532/internal/from_snapshot/"
+export BASE_DIR="/omics/groups/OE0532/internal/YOUR_DIR/"
 
 # for .libPaths()
 export R4_DIR="/omics/groups/OE0532/internal/RStudio"
@@ -98,6 +98,15 @@ Python2 is mainly used by diricore and couple of more tools.
 3. Activate env: `conda activate diricore` or `source activate diricore`
 
 3. Install dependencies: `pip install -r /omics/groups/OE0532/internal/Alex/diricore_packages.txt`
+
+After installing both environments, restart bash profile by: 
+```
+cd
+source ~/.bash_profile
+```
+
+
+
 
 
 
