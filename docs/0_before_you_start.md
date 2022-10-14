@@ -6,7 +6,7 @@ Before running the bioinformatic scripts, the following has to be configured:
 
 !! This is important!
 
-`BASE_DIR` has to be set as an environmental variable. When running a script (any script), the script will try to load this variable to find the correct location of the data. 
+`BASE_DIR` has to be set as an environmental variable. When running a script (any script), the script will try to load this variable to find the correct location of the data. Therefore, any mention of `YOUR_DIR` is a self-named directory. 
 
 So, do the following:
 
