@@ -10,7 +10,7 @@ Before running the bioinformatic scripts, the following has to be configured:
 
 So, do the following:
 
-1. Open the `.bash_profile`: `vim ~/.bash_profile`
+1. Open the bash_profile: `vim ~/.bash_profile`
 
 2. And add this line: `export BASE_DIR="/omics/groups/OE0532/internal/YOUR_DIR"` 
 
