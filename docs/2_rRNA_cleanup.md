@@ -38,6 +38,7 @@ The script will output files here: `ls -lh $BASE_DIR/20910/analysis/output/fastq
 ## 2. Align with blat
 
 Use corresponding genome for your samples: mouse = mm9, human = hg19
+
 Align with [blat](https://genome.ucsc.edu/goldenpath/help/blatSpec.html): 
 
 ```
