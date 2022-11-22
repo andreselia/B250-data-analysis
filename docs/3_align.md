@@ -35,6 +35,7 @@ bsub -q long -R "rusage[mem=100G]" STAR --runThreadN 4 --runMode genomeGenerate
 ## Alignment
 
 `module load STAR`
+
 Align: `$BASE_DIR/software/preprocessing/3_alignment/1_align_to_transcriptome.sh 20910 mm10 80G`
 
 The script takes input file from the clean directory: `$BASE_DIR/20910/analysis/output/clean`
