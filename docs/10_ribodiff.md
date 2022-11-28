@@ -49,7 +49,7 @@ RNA-seq:
 ```
 bsub -q long -R "rusage[mem=30G]" $BASE_DIR/software/ext_diricore/1_get_seq_from_bam.sh 21221_RNA all_unique
 ```
-Use 'long' processing time for RNAseq data!.
+Use 'long' processing time for RNAseq data!
 
 If for RNA-seq data there are no UMIs, then the script will not find the `*dedup.bam` files. Just run the script with the argument `all`. And then create symlinks:
 
