@@ -24,6 +24,7 @@ cd /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/output
 ```
 module load R/4.2.0
 module load java
+module load gcc/7.2.0
 ```
 
 ```
