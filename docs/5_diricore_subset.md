@@ -43,7 +43,7 @@ module load samtools
 
 ## 2. Extract reads from bam: 
 
-Input list must contain ENSMBL Transcript IDs, no gene symbols!
+Input list must contain ENSMBL stable Transcript IDs, no Transcript ID version, no gene symbols!
 ```
 $BASE_DIR/software/diricore_subset/1_extract_bam.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt
 ```
