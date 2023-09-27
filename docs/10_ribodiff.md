@@ -69,7 +69,11 @@ bsub -q medium -R "rusage[mem=30G]" $BASE_DIR/software/ext_diricore/1_get_seq_fr
 
 ## 2. Aggregate counts 
 
+Important: Prepare the output dir before running the aggregation. Such as ... 
+```
+/omics/groups/OE0532/internal/Alex//A330_TE_Fusion_RNA/analysis/output/ribo_diff/reads/all/
 coding genes: 
+```
 
 human
 ```
