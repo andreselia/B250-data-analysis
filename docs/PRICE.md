@@ -40,4 +40,11 @@ bsub -q long -R rusage[mem=10G] /omics/groups/OE0532/internal/Alex//scripts/Gedi
 PRICE will output various plots and files in the prefix-named dir. The most important file *${prefix}.orfs.tsv* contains all the information about all called ORFs.
 Depending on desired output, interrogate the table with basic grep/cut/sort functions.
 
+For mouse samples: Use mm10 reference file location for job submission.
+
+```
+bsub -q long -R rusage[mem=100G] /omics/groups/OE0532/internal/Alex/scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/39381/analysis/output/alignments/PRICE/toGenome/S1_E0771_MONO_toGenome.bam -genomic /omics/groups/OE0532/internal/Alex/genomes/PRICE_mm10/mm10.oml -prefix S1_E0771_MONO/S1_E0771_MONO -plot
+```
+
+
 
