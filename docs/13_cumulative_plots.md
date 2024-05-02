@@ -33,6 +33,13 @@ MT-ND5
 MT-ND6
 MT-CYB
 ```
+For mm10 samples: 
+
+```
+bsub -q long -R "rusage[mem=20G]" python $BASE_DIR/scripts/cumulative_reads_mm10.py 39381 all_unique /omics/groups/OE0532/internal/Alex/ID_lists/Mito_mm10_geneSymbols.txt
+```
+The cumulative script uses a transcript length file specific for mouse or human, as well as a mouse-specific gene list.
+
 
 ## 3. Get cumulative plot for a subset of samples
 
