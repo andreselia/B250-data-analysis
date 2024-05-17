@@ -1,3 +1,5 @@
+# BAM Extraction based on ID
+
 For some analysis, BAM file format information of certain transcript or gene are necessary. To achieve this, the following script takes stable transcript/ gene ENSEMBL IDs as list input and performs list comparison.
 The output is a BAM file of the selected transcripts/ genes.
 
