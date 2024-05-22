@@ -80,6 +80,6 @@ With this, we can run RiboWaltz
 ```
 module load gcc/7.2.0
 module load R/3.6.2
-Rscript $BASE_DIR/software/ribo_waltz/2_periodicity.r 23108 hg19 all_unique_p24_GFP
-Rscript $BASE_DIR/software/ribo_waltz/2_periodicity.r 23108 hg19 all_unique_p25_HA
+bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_pdf.r 23108 hg19 all_unique_p24_GFP
+bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_pdf.r 23108 hg19 all_unique_p25_HA
 ```
