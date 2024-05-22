@@ -56,6 +56,8 @@ This is a step-by-step tutorial for analysing the Ribosome-Profiling (and other)
 
 21. [PCA plot](docs/16_pca.md)
 
+22. [Extract BAM info based on gene file](docs/19_BAM_extraction.md)
+
 ...
 
 etc
