@@ -72,8 +72,9 @@ bsub -q medium -R "rusage[mem=30G]" $BASE_DIR/software/ext_diricore/1_get_seq_fr
 Important: Prepare the output dir before running the aggregation. Such as ... 
 ```
 /omics/groups/OE0532/internal/Alex//A330_TE_Fusion_RNA/analysis/output/ribo_diff/reads/all/
-coding genes: 
 ```
+Sample naming: Sample names must not start with numbers. However, replicate numbers must be trailing (eg. NC_DMSO_01.tsv, NC_DMSO_02.tsv). RNA and RP prefixes will be added by aggregation.
+
 
 human
 ```
