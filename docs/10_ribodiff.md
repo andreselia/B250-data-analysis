@@ -73,7 +73,8 @@ Important: Prepare the output dir before running the aggregation. Such as ...
 ```
 /omics/groups/OE0532/internal/Alex//A330_TE_Fusion_RNA/analysis/output/ribo_diff/reads/all/
 ```
-Sample naming: Sample names must not start with numbers. However, replicate numbers must be trailing (eg. NC_DMSO_01.tsv, NC_DMSO_02.tsv). RNA and RP prefixes will be added by aggregation.
+
+> **_Note:_** Sample names must not start with numbers. However, replicate numbers must be trailing (eg. NC_DMSO_01.tsv, NC_DMSO_02.tsv). RNA and RP prefixes will be added by aggregation.
 
 
 human
