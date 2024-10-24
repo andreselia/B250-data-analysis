@@ -76,7 +76,7 @@ export R3_4_DIR="/omics/groups/OE0532/internal/RStudio_3.4"
 
 Most scripts will be running under python 3.
 
-1. Your bash_profile automatically loads micromamba: `module load micromamba/1.4.9`
+1. Load micromamba: `module load micromamba/1.4.9`
 
 2. Initialization of micromamba (Needs to be done only once, Skip if done before)
 
@@ -92,7 +92,7 @@ Most scripts will be running under python 3.
 
 Python2 is mainly used by diricore and couple of more tools.
 
-1. Your bash_profile automatically loads micromamba: `module load micromamba/1.4.9`
+1. Load micromamba: `module load micromamba/1.4.9`
 
 2. Initialization of micromamba (Needs to be done only once, Skip if done before)
 
