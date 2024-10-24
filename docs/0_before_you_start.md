@@ -74,7 +74,7 @@ export R3_4_DIR="/omics/groups/OE0532/internal/RStudio_3.4"
 
 ## 2. Virtual env for python3
 
-Mainly the scripts will be running under python 3.
+Most scripts will be running under python 3.
 
 1. Your bash_profile automatically loads micromamba: `module load micromamba/1.4.9`
 
