@@ -59,7 +59,7 @@ Quit bash profile. Remember to name <YOUR_DIR> in the code above!
 6. Reload bash profile: `source ~/.bash_profile`
 
 
-# RStudio
+### RStudio
 
 Different R scripts require different R versions. For each version there is a location to install packages. 
 
