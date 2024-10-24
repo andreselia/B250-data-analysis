@@ -4,7 +4,7 @@ Before running the bioinformatic scripts, the following has to be configured:
 
 ## 1. BASH_PROFILE
 
-!! This is important!
+*This is important*
 
 We need to set certain environmental variables. 1) `BASE_DIR` has to be set. When running a script (any script), the script will try to load this variable to find the correct location of the data. Therefore, any mention of `YOUR_DIR` is a self-named directory. 2) Set the root directory for every virtual environment with micromamba.
 
