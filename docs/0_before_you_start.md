@@ -83,18 +83,18 @@ Most scripts will be running under python 3.
 micromamba shell init --shell bash --root-prefix=~/micromamba
 ```
 
-4. Create your python 3 environment with important packages/ dependencies:
+3. Create your python 3 environment with important packages/ dependencies:
 ```
 micromamba create --name p3 --file /omics/groups/OE0532/internal/Alex/01_VIRTUAL_ENV_YML/p3.yml
 ```
 
-5. Once installation is done, activate env: `micromamba activate p3`
+4. Once installation is done, activate env: `micromamba activate p3`
 
-6. Advice: Now add `module load micromamba/1.4.9` and `micromamba activate p3` to your bash profile, to automatically load the package and activate this virtual env.
+5. Advice: Now add `module load micromamba/1.4.9` and `micromamba activate p3` to your bash profile, to automatically load the package and activate this virtual env.
 
 
 
-## 5. Virtual env for python2
+## 3. Virtual env for python2
 
 Python2 is mainly used by diricore and couple of more tools.
 
@@ -105,19 +105,19 @@ Python2 is mainly used by diricore and couple of more tools.
 micromamba shell init --shell bash --root-prefix=~/micromamba
 ```
 
-4. Create your python 2 environment with important packages/ dependencies:
+3. Create your python 2 environment with important packages/ dependencies:
 ```
 micromamba create --name diricore --file /omics/groups/OE0532/internal/Alex/01_VIRTUAL_ENV_YML/diricore.yml
 ```
 
-6. Once installation is done, activate env: `micromamba activate diricore`
+4. Once installation is done, activate env: `micromamba activate diricore`
 
-7. Install htseq package separately. Change *<YOUR_ID>* with your cluster ID:
+5. Install htseq package separately. Change *<YOUR_ID>* with your cluster ID:
 ```
 /home/<YOUR_ID>/micromamba/envs/diricore/bin/python -m pip install htseq==0.11.3
 ```
 
-10. Install RiboDiff separately. If **not** downloaded yet: `git clone git@github.com:kate-v-stepanova/RiboDiff`.
+6. Install RiboDiff separately. If **not** downloaded yet: `git clone git@github.com:kate-v-stepanova/RiboDiff`.
 Next steps need to be done to install RiboDiff in your new virtual env.
 ```
 cd RiboDiff
@@ -125,7 +125,7 @@ python setup.py build
 python setup.py install
 ```
 
-After installing both environments, restart bash profile by: 
+## After installing both environments, restart bash profile by: 
 ```
 source ~/.bash_profile
 ```
