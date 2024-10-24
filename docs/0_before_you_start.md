@@ -80,11 +80,14 @@ Most scripts will be running under python 3.
 
 2. Initialization of micromamba (Needs to be done only once, Skip if done before)
 
-3. Create your python 3 environment with important packages/ dependencies: `micromamba create --name p3 --file /omics/groups/OE0532/internal/Alex/01_VIRTUAL_ENV_YML/p3.yml`
+3. Create your python 3 environment with important packages/ dependencies:
+```
+micromamba create --name p3 --file /omics/groups/OE0532/internal/Alex/01_VIRTUAL_ENV_YML/p3.yml
+```
 
-4. Once installation is done, activate env: `micromamba activate p3`
+5. Once installation is done, activate env: `micromamba activate p3`
 
-5. Advice: Now add `module load micromamba/1.4.9` and `micromamba activate p3` to your bash profile, to automatically load the package and activate this virtual env.
+6. Advice: Now add `module load micromamba/1.4.9` and `micromamba activate p3` to your bash profile, to automatically load the package and activate this virtual env.
 
 
 
@@ -95,14 +98,23 @@ Python2 is mainly used by diricore and couple of more tools.
 1. Load micromamba: `module load micromamba/1.4.9`
 
 2. Initialization of micromamba (Needs to be done only once, Skip if done before)
+```
+micromamba shell init --shell bash --root-prefix=~/micromamba
+```
 
-3. Create your python 2 environment with important packages/ dependencies: `micromamba create --name diricore --file /omics/groups/OE0532/internal/Alex/01_VIRTUAL_ENV_YML/diricore.yml`
+4. Create your python 2 environment with important packages/ dependencies:
+```
+micromamba create --name diricore --file /omics/groups/OE0532/internal/Alex/01_VIRTUAL_ENV_YML/diricore.yml
+```
 
-4. Once installation is done, activate env: `micromamba activate diricore`
+6. Once installation is done, activate env: `micromamba activate diricore`
 
-5. Install htseq package separately. Change *<YOUR_ID>* with your cluster ID: `/home/<YOUR_ID>/micromamba/envs/diricore/bin/python -m pip install htseq==0.11.3`
+7. Install htseq package separately. Change *<YOUR_ID>* with your cluster ID:
+```
+/home/<YOUR_ID>/micromamba/envs/diricore/bin/python -m pip install htseq==0.11.3
+```
 
-6. Install RiboDiff separately. If *not* downloaded yet: `git clone git@github.com:kate-v-stepanova/RiboDiff`.
+10. Install RiboDiff separately. If *not* downloaded yet: `git clone git@github.com:kate-v-stepanova/RiboDiff`.
 Next steps need to be done to install RiboDiff in your new virtual env.
 ```
 cd RiboDiff
