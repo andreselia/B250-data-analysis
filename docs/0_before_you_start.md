@@ -6,7 +6,7 @@ Before running the bioinformatic scripts, the following has to be configured:
 
 *This is important*
 
-We need to set certain environmental variables. 1) `BASE_DIR` has to be set. When running a script (any script), the script will try to load this variable to find the correct location of the data. Therefore, any mention of `YOUR_DIR` is a self-named directory. 2) Set the root directory for every virtual environment with micromamba.
+We need to set certain environmental variables. 1) `BASE_DIR` has to be set. When running a script (any script), the script will try to load this variable to find the correct location of the data. Therefore, any mention of **<YOUR_DIR>** is a self-named directory. Change **<YOUR_ID>** with your cluster ID. 2) Set the root directory for every virtual environment with micromamba. 
 
 So, do the following:
 
@@ -24,7 +24,7 @@ export PS1='\u@\H:\w$ ';
 export BASE_DIR="/omics/groups/OE0532/internal/YOUR_DIR/"
 
 # for .libPaths()
-export R4_2_DIR="/home/a672r/R/x86_64-pc-linux-gnu-library/4.2"
+export R4_2_DIR="/home/<YOUR_ID>/R/x86_64-pc-linux-gnu-library/4.2"
 export R4_DIR="/omics/groups/OE0532/internal/RStudio"
 export R3_6_DIR="/omics/groups/OE0532/internal/RStudio_3.6.2"
 export R3_4_DIR="/omics/groups/OE0532/internal/RStudio_3.4"
@@ -32,7 +32,7 @@ export R3_4_DIR="/omics/groups/OE0532/internal/RStudio_3.4"
 export PATH=${JAVA_HOME}/bin:${PATH}
 
 # micromamba
-export MAMBA_ROOT_PREFIX="/home/a672r/micromamba/"
+export MAMBA_ROOT_PREFIX="/home/YOUR_ID/micromamba/"
 # module load micromamba/1.4.9               ### Uncomment and remove this comment after installing p3!
 eval "$(micromamba shell hook --shell bash)"
 # micromamba activate p3                     ### Uncomment and remove this comment after installing p3!
@@ -112,9 +112,9 @@ micromamba create --name diricore --file /omics/groups/OE0532/internal/Alex/01_V
 
 4. Once installation is done, activate env: `micromamba activate diricore`
 
-5. Install htseq package separately. Change *<YOUR_ID>* with your cluster ID:
+5. Install htseq package separately. Change **<YOUR_ID>** with your cluster ID:
 ```
-/home/<YOUR_ID>/micromamba/envs/diricore/bin/python -m pip install htseq==0.11.3
+/home/YOUR_ID/micromamba/envs/diricore/bin/python -m pip install htseq==0.11.3
 ```
 
 6. Install RiboDiff separately. If **not** downloaded yet: `git clone git@github.com:kate-v-stepanova/RiboDiff`.
