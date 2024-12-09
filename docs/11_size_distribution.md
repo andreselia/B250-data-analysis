@@ -8,7 +8,7 @@
 Skip this step if this was already done.
 
 ```
-$BASE_DIR/software/counts/1_get_seq_from_bam.sh 21221 all_unique
+bsub -q long -R "rusage[mem=50G]" $BASE_DIR/software/counts/1_get_seq_from_bam.sh 21221 all_unique
 ```
 
 The script will extract reads from the .bam files. `21221` - dataset_id, `all_unique` - bam_type (`all` - all reads including duplicates, `all_unique` - only unique reeads)
