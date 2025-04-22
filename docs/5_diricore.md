@@ -47,6 +47,7 @@ S14_Lung8       S4_4T1_Ctrl     #ff0000
 ```
 
 ## 2. Run subsequence analysis
+### 2.1 Plot creation
 
 Subsequence analysis:  
 
@@ -68,6 +69,19 @@ For each contrast from the `$BASE_DIR/20910/analysis/input/metadata/rpf_density_
 The plot will look like that:
 
 ![](/pics/diricore_1.png)
+
+### 2.2 Table creation
+
+To obtain value tables for the subsequence plots, use the following bash scripts for job submission instead:
+
+```
+bsub -q long -R "rusage[mem=50G]" $BASE_DIR/software/diricore/subsequence_analysis_tables.sh 20910 mm10 50 all_unique
+bsub -q long -R "rusage[mem=50G]" $BASE_DIR/software/diricore/subsequence_analysis_Mito_tables.sh 20910 mm10 50 all_unique
+bsub -q long -R "rusage[mem=50G]" $BASE_DIR/software/diricore/subsequence_analysis_subset_tables.sh 20910 mm10 50 all_unique
+```
+With 1) General tables for all input genes; 2) Tables for mitochondrial genes; 3) Tables for subset gene input. These scripts create the subsequence plots and value tables. 
+Please use the option 'plots_only' if a corresponding hdf5 file was already created in prior.
+
 
 ## 3. Adjust the layout
 
