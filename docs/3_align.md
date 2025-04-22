@@ -172,7 +172,7 @@ python $BASE_DIR/software/preprocessing/stats/get_alignment_stats_2.py 20910
 #### 4. Plot alignment stats
 
 ```
-module load gcc/7.2.0 && module load R/3.6.2 && Rscript $BASE_DIR/software/preprocessing/stats/plot_star_alignment_stats.r 20910
+module load gcc/7.2.0 && module load R/3.6.2 && Rscript /omics/groups/OE0532/internal/Alex/scripts/plot_star_alignment_stats_new.r 20910
 ```
 
 The alignments plot looks like that: 
