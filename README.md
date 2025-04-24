@@ -45,6 +45,8 @@ This is a step-by-step tutorial for analysing the Ribosome-Profiling (and other)
     
 18. [ORF Reference File](docs/ORF_Reference_File.md)
 
+19. [SAF Reference File](docs/SAF_reference_file.md)
+
 
 ## Simple data extraction / simpe plots
 
