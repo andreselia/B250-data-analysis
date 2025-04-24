@@ -75,9 +75,9 @@ The plot will look like that:
 To obtain value tables for the subsequence plots, use the following bash scripts for job submission instead:
 
 ```
-bsub -q long -R "rusage[mem=50G]" $BASE_DIR/software/diricore/subsequence_analysis_tables.sh 20910 mm10 50 all_unique
-bsub -q long -R "rusage[mem=50G]" $BASE_DIR/software/diricore/subsequence_analysis_Mito_tables.sh 20910 mm10 50 all_unique
-bsub -q long -R "rusage[mem=50G]" $BASE_DIR/software/diricore/subsequence_analysis_subset_tables.sh 20910 mm10 50 all_unique
+bsub -q long -R "rusage[mem=50G]" /omics/groups/OE0532/internal/Alex/scripts/subsequence_analysis_tables.sh 20910 mm10 50 all_unique
+bsub -q long -R "rusage[mem=50G]" /omics/groups/OE0532/internal/Alex/scripts/subsequence_analysis_Mito_tables.sh 20910 mm10 50 all_unique
+bsub -q long -R "rusage[mem=50G]" /omics/groups/OE0532/internal/Alex/scripts/subsequence_analysis_subset_tables.sh 20910 mm10 50 all_unique
 ```
 With 1) General tables for all input genes; 2) Tables for mitochondrial genes; 3) Tables for subset gene input. These scripts create the subsequence plots and value tables. 
 Please use the option 'plots_only' if a corresponding hdf5 file was already created in prior.
