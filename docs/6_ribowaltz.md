@@ -34,14 +34,21 @@ $BASE_DIR/20910/analysis/input/periodicity_bam/all_unique
 ```
 
 This needs to be done, because RiboWaltz reads the whole directory, not a single bam file.
+This will only be successful if deduplication was performed after alignment. For the usage of *all* reads symlink *BAM* files manually using *'ln -s'*.   
 
 ## 3. Run RiboWaltz
+First, install riboWaltz using RStudio (eg. R/4.2.0) manually, plus necessary dependencies.
+Then continue from the command line:
 
 ```
 module load gcc/7.2.0
-module load R/3.6.2
-Rscript $BASE_DIR/software/ribo_waltz/2_periodicity.r 20910 mm10 all_unique
+module load R/4.2.0
+bsub -q long -R rusage[mem=40G] Rscript $BASE_DIR/software/ribo_waltz/2_periodicity_additional_pdf.r 20910 mm10 all_unique
 ```
+
+## Modification
+The prior modified script will also output the count tables that are the plotting input for the riboWaltz plots.
+The output dir will be printed with the STDOUT. 
 
 # Ribowaltz for a subset of samples
 
@@ -83,3 +90,25 @@ module load R/3.6.2
 bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_pdf.r 23108 hg19 all_unique_p24_GFP
 bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_pdf.r 23108 hg19 all_unique_p25_HA
 ```
+
+## 2. psites per transcript
+
+To obtain information and plotting about psite distribution per transcript, perform:
+
+```
+module load gcc/7.2.0
+module load R/3.6.2
+bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_per_transcript.r 23108 hg19 all_unique_p24_GFP ENST00000229239.5
+```
+Important is the command line parameter of a ENSEMBL transcript ID version (here: ENST00000229239.5). Useful for single runs, however, iteration over multiple IDs should be performed via Rstudio.
+That is, every iteration of Ribowaltz loads BAM files and calculates p-site offsets. Thus, to save time iterate these IDs from the script AFTER p-site offset calculation. 
+
+
+
+
+
+
+
+
+
+
