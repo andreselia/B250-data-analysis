@@ -34,7 +34,7 @@ If needed, add '-progress' flag to receive a detailed list of the running progre
 
 Submit to cluster
 ```
-bsub -q long -R rusage[mem=10G] /omics/groups/OE0532/internal/Alex//scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/MCF7_Ctrl_toGenome.bam -genomic hg19 -prefix MCF7_Ctrl_toGenome.bam/MCF7_Ctrl_toGenome.bam -progress -plot
+bsub -q long -R rusage[mem=10G] /omics/groups/OE0532/internal/Alex//scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/MCF7_Ctrl_toGenome.bam -genomic /omics/groups/OE0532/internal/Alex/scripts/Gedi/Gedi_1.0.5/hg19/hg19.oml -prefix MCF7_Ctrl_toGenome.bam/MCF7_Ctrl_toGenome.bam -progress -plot
 ```
 
 PRICE will output various plots and files in the prefix-named dir. The most important file *${prefix}.orfs.tsv* contains all the information about all called ORFs.
@@ -47,6 +47,22 @@ For mouse samples: Use mm10 reference file location for job submission.
 ```
 bsub -q long -R rusage[mem=100G] /omics/groups/OE0532/internal/Alex/scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/39381/analysis/output/alignments/PRICE/toGenome/S1_E0771_MONO_toGenome.bam -genomic /omics/groups/OE0532/internal/Alex/genomes/PRICE_mm10/mm10.oml -prefix S1_E0771_MONO/S1_E0771_MONO -plot
 ```
+
+### 4.2 PRICE Feature Quantification
+
+To quantify all as significant predicted ORF features or Start Codons, create a new dir, copy the PRICE output tables into this directory and perform the respective counting script.
+The script reads all files within this directory.
+```
+# eg.
+mkdir -p $BASE_DIR/42445/analysis/output/PRICE/output/ORF_tables
+cd $BASE_DIR/42445/analysis/output/PRICE/output/ORF_tables
+cp ../S1_U2OS_Ctrl_toGenome.bam/S1_U2OS_Ctrl_toGenome.bam.orfs.tsv ./
+/omics/groups/OE0532/internal/Alex//scripts/PRICE_Count_Categories.sh ./
+# or
+/omics/groups/OE0532/internal/Alex//scripts/PRICE_Count_Codons.sh ./
+```
+
+This will provide an output.tsv file in your current working directory about all ORF features/ start codons across all files in the input directory.
 
 
 
