@@ -7,18 +7,22 @@ This R script processes PRICE output data to identify open reading frames (ORFs)
 ---
 
 ## Usage
+```
+module load   R/4.4.3-GCCcore-14.1.0  
+```
 
 Run the script via command line on an HPC or local terminal with:
 
 ```
 
-bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres/scripts/scripts_andres/ORF_dna_to_peptide_table.r <project_id> <species> <celltype1_celltype2_...>
+bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres/scripts/scripts_andres/ORF_dna_to_peptide_table.r <project_id> <species> <celltype1_celltype2_...> <min_peptide_length>
 
 ```
 
 - Replace `<project_id>` with your project's numeric or string ID.
 - Replace `<species>` with the genome build name: either `mm10` (mouse) or `hg19` (human).
 - Replace `<celltype1_celltype2_...>` with underscore-separated cell types to subset, e.g., `NP5_TC1`.
+- Replace `<min_peptide_length>` with the desired minimum peptide length. 
 
 ---
 
@@ -51,15 +55,16 @@ This filtering ensures that only significant and relevant ORFs proceed for downs
 
 ### 2. Expanding ORF Coordinates
 
-- Splits multi-range ORFs into individual genomic ranges.
+- Splits multi-range ORFs into individual genomic ranges. It takes the values from the Candidate Location column (it may differ from Location)
 - Adjusts start coordinates by +1 for `+` strand ORFs.
-- Produces expanded ORFs with explicit coordinates to facilitate sequence extraction.
+- Produces expanded ORFs with explicit coordinates to facilitate sequence extraction. 
 
 ### 3. Extracting DNA Sequences
 
 - Uses `GenomicRanges` to create genomic ranges.
 - Filters ranges to chromosomes supported by the selected genome (`mm10` or `hg19`).
 - Extracts DNA sequences for the ORFs using the appropriate `BSgenome` package.
+Note: if you compare the expected starting codon among the split ORF ranges, it may differ from the one originally established by PRICE.
 
 ### 4. Translating to Peptides
 
@@ -70,7 +75,6 @@ This filtering ensures that only significant and relevant ORFs proceed for downs
 
 - Extracts cell type and treatment information from sample names by splitting on underscore.
 - Saves peptide and ORF tables per requested cell type as TSV files.
-- Generates peptide FASTA files named by cell type.
 
 ### 6. Generating Summary Plots
 
@@ -80,6 +84,11 @@ This filtering ensures that only significant and relevant ORFs proceed for downs
   - Bar plots of stop codon presence by strand.
   - Bar plots of ORF type frequency.
 - Saves plots as PDF files in the output folder.
+
+### 6. Generating FASTA file
+
+- Compare the peptide sequences among the samples and treatments, and keep the unique ones for each condition.
+- Generates peptide FASTA files for each cell type.
 
 ---
 
