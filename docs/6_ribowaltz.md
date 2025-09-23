@@ -1,8 +1,10 @@
 # Periodicity (RiboWaltz)
 
-> **_IMPORTANT:_** `$BASE_DIR` has to be specified in your `.bash_profile`. Details [here](docs/0_before_you_start.md)
+> **_IMPORTANT 1:_** `$BASE_DIR` has to be specified in your `.bash_profile`. Details [here](docs/0_before_you_start.md)
 
-> **_IMPORTANT 2:_** R Package [RiboWaltz](https://github.com/LabTranslationalArchitectomics/riboWaltz) is required. 
+> **_IMPORTANT 2:_** R Package [RiboWaltz](https://github.com/LabTranslationalArchitectomics/riboWaltz) is required.
+
+> > **_IMPORTANT 3:_** To run this analysis on Debian, log in to user@odcf-worker01.dkfz.de, load R/4.4.1-GCCcore-14.1.0 (the GCC module will be automatically loaded), and install RbioWaltz with all its dependencies. 
 
 RiboWaltz requires bam files with **transcriptome** coordinates (not the genome!), e.g. 
 
@@ -38,11 +40,11 @@ This will only be successful if deduplication was performed after alignment. For
 
 ## 3. Run RiboWaltz
 First, install riboWaltz using RStudio (eg. R/4.2.0) manually, plus necessary dependencies.
-Then continue from the command line:
+Then continue from the command line (if Debian is being used, please load R/4.4.1-GCCcore-14.1.0):
 
 ```
-module load gcc/7.2.0
-module load R/4.2.0
+module load R/4.2.0 # module load R/4.2.0 on Debian
+module load gcc/7.2.0 # on Debian, gcc will be automatically loaded
 bsub -q long -R rusage[mem=40G] Rscript $BASE_DIR/software/ribo_waltz/2_periodicity_additional_pdf.r 20910 mm10 all_unique
 ```
 
@@ -85,8 +87,8 @@ With this, we can run RiboWaltz
 
 
 ```
-module load gcc/7.2.0
-module load R/3.6.2
+module load R/4.2.0 # module load R/4.2.0 on Debian
+module load gcc/7.2.0 # on Debian, gcc will be automatically loaded
 bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_pdf.r 23108 hg19 all_unique_p24_GFP
 bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_pdf.r 23108 hg19 all_unique_p25_HA
 ```
@@ -96,8 +98,8 @@ bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//sc
 To obtain information and plotting about psite distribution per transcript, perform:
 
 ```
-module load gcc/7.2.0
-module load R/3.6.2
+module load R/4.2.0 # module load R/4.2.0 on Debian
+module load gcc/7.2.0 # on Debian, gcc will be automatically loaded
 bsub -q long -R "rusage[mem=50G]" Rscript /omics/groups/OE0532/internal/Alex//scripts/2_periodicity_per_transcript.r 23108 hg19 all_unique_p24_GFP ENST00000229239.5
 ```
 Important is the command line parameter of a ENSEMBL transcript ID version (here: ENST00000229239.5). Useful for single runs, however, iteration over multiple IDs should be performed via Rstudio.
