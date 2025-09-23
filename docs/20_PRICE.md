@@ -6,6 +6,7 @@ Please check the original documentation of the Erhard Lab: https://github.com/er
 ## 1. Re-Align fastq files
 Input dir is: '$PROJECT_DIR/analysis/output/clean'
 ```
+module load STAR
 $BASE_DIR/scripts/Align_to_transcriptome_PRICE.sh 3808 hg19 80G
 ```
 
