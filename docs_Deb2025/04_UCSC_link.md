@@ -5,9 +5,8 @@
 > **_IMPORTANT 2:_** The following tools are required and have to be placed into `$BASE_DIR/software/bin`:
 > [bedtools v2.25.0](https://bedtools.readthedocs.io/en/latest/), [bedClip](http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedClip), [bedGraphToBigWig](http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig)
 
-The tools are already installed, but bedGraphToWig requires libpng12, outdated in Debian. I am asking for the instalation of this specific version. Otherwise, a dedicated micromamba environment should be created to solve this issue.
-
-I reinstalled in /software2/bin and now I am modifing $BASE_DIR/software/ucsc/bdg2bw.sh to call BIN_PATH2=$BASE_DIR/software2/bin folder
+> The tools are already installed, but bedGraphToWig requires libpng12, outdated in Debian. I reinstalled in /software2/bin and now I am modifing $BASE_DIR/software/ucsc/bdg2bw.sh to call BIN_PATH2=$BASE_DIR/software2/bin folder to check if the reinstallation fix the issues
+> The reinstallation fixed the issues, and I am keeping the script to its original form $BASE_DIR/software/ucsc/bdg2bw.sh
 
 ## 1. Create UCSC tracks
 
