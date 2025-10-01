@@ -7,10 +7,14 @@
 
 The tools are already installed, but bedGraphToWig requires libpng12, outdated in Debian. I am asking for the instalation of this specific version. Otherwise, a dedicated micromamba environment should be created to solve this issue.
 
+I reinstalled in /software2/bin and now I am modifing $BASE_DIR/software/ucsc/bdg2bw.sh to call BIN_PATH2=$BASE_DIR/software2/bin folder
+
 ## 1. Create UCSC tracks
 
 ```
-module load samtools
+module load SAMtools/1.20-GCC-14.1.0
+module load BEDTools/2.31.1-GCC-14.1.0
+
 $BASE_DIR/software/ucsc/1_generate_ucsc_tracks.sh 21012 mm10 all_unique
 ```
 
