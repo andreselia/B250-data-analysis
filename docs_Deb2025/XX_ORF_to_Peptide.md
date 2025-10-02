@@ -31,9 +31,10 @@ Ensure that the environment variable `BASE_DIR` is set pointing to the base fold
 ## Usage
 
 Run from the command line:
-`
+
+```
 Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v2.r <project_id> <species> <celltype1_celltype2_...> <min_peptide_length>
-`
+```
 
 
 - `project_id`: Project folder name (e.g., `43979`)
@@ -43,9 +44,9 @@ Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_
 
 Example:
 
-`
+```
 Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v2.r 43979 mm10 NP5_TC1 10
-`
+```
 
 ---
 
@@ -86,9 +87,10 @@ Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_
 ## Output Structure
 
 All output files (tables, FASTA, plots) are saved under:
-`
+
+```
 $BASE_DIR/<project_id>/analysis/output/PRICE/ORF_to_Peptide/
-`
+```
 
 - `ORF_with_sequences_<SampleName>.tsv`  
 - `peptides_<SampleName>.fasta`  
@@ -107,4 +109,4 @@ $BASE_DIR/<project_id>/analysis/output/PRICE/ORF_to_Peptide/
 - Merging celltypes allows multi-treatment comparison while keeping sample-level resolution via individual outputs.
 
 ---
-<img width="442" height="648" alt="image" src="https://github.com/user-attachments/assets/4791e04f-cf68-4fe0-9ede-a54234b87e81" />
+
