@@ -113,7 +113,16 @@ where `30` is min read length, `24`, `25` and `26` are the subsets.
 
 This will allow to process all 3 subsets in parallel.
 
-> *_NOTE:_* The command `bsub` submits the job to the cluster. The job will be running for a few hours. Once it's done (or failed), the notification will be sent by email. 
+> *_NOTE 1:_* The command `bsub` submits the job to the cluster. The job will be running for a few hours. Once it's done (or failed), the notification will be sent by email.
+> 
+> *_NOTE 2:_* If you want to repeat this step, be sure to remove the previous output:
+> 
+> rm -r $BASE_DIR/Proj_id/analysis/output/*
+> 
+> rm $BASE_DIR/Proj_id/analysis/input/fastq/*.gz
+> 
+> rm $BASE_DIR/Proj_id/analysis/input/merged/24_trimmed.fastq.gz
+
 
 If the job has failed, the output will be included in the email. This might help to figure out what exactly went wrong.
 
