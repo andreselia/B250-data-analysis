@@ -301,16 +301,16 @@ This will create 2 files:
 Now, let's create a plot: 
 
 ```
-module load R/3.6.2
-module load gcc/7.2.0
-Rscript $BASE_DIR/software/preprocessing/stats/plot_basic_stats.r  20910
+module load R/4.4.1-GCCcore-14.1.0
+Rscript $BASE_DIR/software/preprocessing/stats/plot_basic_stats.r 45280
+
 ```
 
 Or, simply run it from the RStudio: `https://odcf-rstudio01.dkfz.de/`
 
 ### Copy data from the cluster
 
-Copy data: `scp -r  USERNAME@odcf-cn34u03s10:YOUR_BASE_DIR/20910/analysis/output/figures/* ~/analysis/20910/figures`
+Copy data: `scp -r  USERNAME@odcf-worker01.dkfz.de:YOUR_BASE_DIR/20910/analysis/output/figures/* ~/analysis/20910/figures`
 
 Note that `~/analysis/20910/figures` has to be created on your local computer. 
 
