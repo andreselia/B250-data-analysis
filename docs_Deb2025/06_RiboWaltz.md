@@ -25,6 +25,14 @@ $BASE_DIR/22276/analysis/output/alignments/toTranscriptome
 
 ## 1. Create symlinks
 
+This script requires the rpf_densitiy_sampplenames file
+
+```
+vim $BASE_DIR/20910/analysis/input/metadata/rpf_density_samplenames.tsv
+```
+
+Then you can create the symlinks
+
 ```
 /omics/groups/OE0532/internal/from_snapshot/software/ribo_waltz/1_create_symlinks.sh 20910 all_unique
 ```
