@@ -101,7 +101,7 @@ Open the link: http://genome.ucsc.edu/cgi-bin/hgCustom
 
 ### 4.3 Add tracks & select the genome version
 
-Copy & paste the annotation file: `less $BASE_DIR/21012/analysis/output/gen_tracks/all_unique/ucsc_track_annotation.txt`
+Copy & paste the annotation file: `less $BASE_DIR/45280/analysis/output/ucsc_tracks/all/ucsc_track_annotation.txt`
 
 Make sure that the correct genome version is selected.
 
