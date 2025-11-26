@@ -51,9 +51,8 @@ First, install riboWaltz using RStudio (eg. R/4.2.0) manually, plus necessary de
 Then continue from the command line (if Debian is being used, please load R/4.4.1-GCCcore-14.1.0):
 
 ```
-module load R/4.2.0 # module load R/4.4.1-GCCcore-14.1.0 on Debian
-module load gcc/7.2.0 # on Debian, gcc will be automatically loaded
-bsub -q long -R rusage[mem=40G] Rscript $BASE_DIR/software/ribo_waltz/2_periodicity_additional_pdf.r 20910 mm10 all_unique
+module load R/4.4.3-GCCcore-14.1.0
+bsub -q long -R rusage[mem=40G] Rscript $BASE_DIR/scripts/scripts_andres/2_periodicity_additional_pdf_corrected.r 44223 hg19 all
 ```
 
 ## Modification
