@@ -55,9 +55,6 @@ module load R/4.4.3-GCCcore-14.1.0
 bsub -q long -R rusage[mem=40G] Rscript $BASE_DIR/scripts/scripts_andres/2_periodicity_additional_pdf_corrected.r 44223 hg19 all
 ```
 
-## Modification
-The prior modified script will also output the count tables that are the plotting input for the riboWaltz plots.
-The output dir will be printed with the STDOUT. 
 
 # Ribowaltz for a subset of samples
 
