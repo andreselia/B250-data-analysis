@@ -5,9 +5,14 @@ Please check the original documentation of the Erhard Lab: https://github.com/er
 
 ## 1. Re-Align fastq files
 Input dir is: '$PROJECT_DIR/analysis/output/clean'
+I edited this code to generate the file according to the new env…..basically, the loading of modules should be done before running this step
+
 ```
 module load STAR/2.5.3a-GCC-14.1.0
-$BASE_DIR/scripts/Align_to_transcriptome_PRICE.sh 3808 hg19 80G
+module load SAMtools/1.20-GCC-14.1.0   
+
+$BASE_DIR/scripts/scripts_andres/Align_to_transcriptome_PRICE_Debian.sh 44312_HCT hg19 80G
+
 ```
 
 ## 2. Index new bam files
