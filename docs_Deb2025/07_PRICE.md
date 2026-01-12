@@ -22,19 +22,19 @@ for i in $(ls $BASE_DIR/3772/analysis/output/alignments/PRICE/toGenome/); do ech
 
 ## 3. Prepare dir architecture
 ```
-mkdir -p /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/output/
-cd /omics/groups/OE0532/internal/Alex/3772/analysis/output/PRICE/output
+mkdir -p /omics/groups/OE0532/internal/Andres/44312_HCT/analysis/output/PRICE/output/
+cd /omics/groups/OE0532/internal/Andres/44312_HCT/analysis/output/PRICE/output
+
 ```
 
 ## 4. Run PRICE
 ```
-module load R/4.2.0
-module load java
-module load gcc/7.2.0
+module load R/4.4.3-GCCcore-14.1.0
+
 ```
 
 ```
-for i in $(ls /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/); do echo "bsub -q long -R "rusage[mem=30G]" /omics/groups/OE0532/internal/Alex/scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Alex/3772/analysis/output/alignments/PRICE/toGenome/${i} -genomic hg19 -prefix ${i}/${i} -plot"; done
+for i in $(ls /omics/groups/OE0532/internal/Andres/44312_HCT/analysis/output/alignments/PRICE/toGenome/*.bam | xargs -n 1 basename); do echo "bsub -q long -R "rusage[mem=30G]" /omics/groups/OE0532/internal/Andres/scripts/scripts/Gedi/Gedi_1.0.5/gedi -e Price -D -reads /omics/groups/OE0532/internal/Andres/44312_HCT/analysis/output/alignments/PRICE/toGenome/${i} -genomic /omics/groups/OE0532/internal/Andres/scripts/scripts/Gedi/Gedi_1.0.5/hg19/hg19.oml -prefix ${i}/${i} -plot"; done
 ```
 If needed, add '-progress' flag to receive a detailed list of the running progress.
 
