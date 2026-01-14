@@ -7,7 +7,13 @@
 
 > The tools are already installed, but bedGraphToWig requires libpng12, outdated in Debian. I reinstalled in /software2/bin and now I am modifing $BASE_DIR/software/ucsc/bdg2bw.sh to call BIN_PATH2=$BASE_DIR/software2/bin folder to check if the reinstallation fix the issues
 > The reinstallation fixed the issues, and I am keeping the script to its original form $BASE_DIR/software/ucsc/bdg2bw.sh
-> **_NOTE:_** DKFZ FTP-server is no longer available. So the files are "permanently" stored in Nextcloud. Cronjob is no longer necessary 
+
+> **_NOTE:_** DKFZ FTP-server is no longer available. So the files are "permanently" stored in Nextcloud. Cronjob is no longer necessary
+
+> You will need you usr and pass and also your WEBDAV token (you can find this in the configuration)
+
+ <img width="385" height="744" alt="image" src="https://github.com/user-attachments/assets/dab9eabf-4336-499d-8a1a-73ce68513972" />
+
 
 ## 1. Create UCSC tracks
 
