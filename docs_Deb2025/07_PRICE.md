@@ -70,4 +70,11 @@ cp ../S1_U2OS_Ctrl_toGenome.bam/S1_U2OS_Ctrl_toGenome.bam.orfs.tsv ./
 
 This will provide an output.tsv file in your current working directory about all ORF features/ start codons across all files in the input directory.
 
+### 5 Transfer PRICE output to local folder
+
+```
+scp -r a690a@odcf-worker01.dkfz.de:/omics/groups/OE0532/internal/Andres/44312_Hum/analysis/output/PRICE/ORF_to_Peptide ~/analysis/44312/Hum/PRICE
+
+```
+
 
