@@ -31,12 +31,8 @@ bsub -q medium -R "rusage[mem=30G]" python $BASE_DIR/software/ext_diricore/0_get
 ## 3. Diff expr:
 Here there is a problem with R version, since DESeq2 specific version is required. One solution would be to create a conda env with the correct R version
 
-
-
-
 ```
-module load gcc/7.2.0
-module load R/3.4.2
+module load R/4.4.3-GCCcore-14.1.0
 ```
 
 pool 24 (all counts + cds counts): 
