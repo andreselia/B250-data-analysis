@@ -262,8 +262,8 @@ $BASE_DIR/software/preprocessing/stats/subset_cutadapt_stats.sh 20910 26
 Sometimes it is necessary to plot each subset separately in a separate plot. This can be done with the following command:
 
 ```
-module load R/3.6.2
-module load gcc/7.2.0
+module load R/4.4.1-GCCcore-14.1.0
+
 Rscript $BASE_DIR/software/preprocessing/stats/plot_basic_stats.r 20910 24
 Rscript $BASE_DIR/software/preprocessing/stats/plot_basic_stats.r 20910 25
 Rscript $BASE_DIR/software/preprocessing/stats/plot_basic_stats.r 20910 26
