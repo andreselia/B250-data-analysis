@@ -29,6 +29,9 @@ Ensure that the environment variable `BASE_DIR` is set pointing to the base fold
 ---
 
 ## Usage
+```
+module load R/4.4.3-GCCcore-14.1.0
+```
 
 Run from the command line:
 
