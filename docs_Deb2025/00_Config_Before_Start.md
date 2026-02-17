@@ -39,12 +39,18 @@ eval "$(micromamba shell hook --shell bash)"
 
 
 #RStudio
-if ps -e | grep -q rserver; then
-        module load gcc/7.2.0
-        module load libpng/1.6.37
-        module load hdf5/1.8.18
+#if ps -e | grep -q rserver; then
+ #       module load gcc/7.2.0
+  #      module load libpng/1.6.37
+   #     module load hdf5/1.8.18
 
+#fi
+
+if [[ "$POSITRON" -eq 1 ]]; then
+  module load GCCcore/14.1.0
 fi
+
+
 ```
 
 
