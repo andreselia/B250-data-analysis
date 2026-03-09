@@ -38,7 +38,8 @@ cat filename | sed 1d | cut -f2 > Final.txt
 ## 1. Load samtools
 
 ```
-module load samtools
+module load SAMtools/1.20-GCC-14.1.0 
+
 ```
 
 ## 2. Extract reads from bam: 
