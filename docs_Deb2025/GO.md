@@ -74,7 +74,25 @@ python $BASE_DIR/software/diff_expr/2_diff_expr.py 22276 all_unique_cds 100 pool
 python $BASE_DIR/software/diff_expr/2_diff_expr.py 22276 all_unique_cds 50 pool_26
 ```
 
+Replicates:
+Sometimes there will be replicates available for DESeq2 analysis. To use them, you need to add the group information as a 4th column in the table with condition/group (treated and control). 
 
+S4_TrpMinus_1	S1_TrpPlus_1	#00cc99	TrpMinus
+S5_TrpMinus_2	S2_TrpPlus_2	#262626	TrpMinus
+S6_TrpMinus_3	S3_TrpPlus_3	#b366ff	TrpMinus
+S1_TrpPlus_1	S1_TrpPlus_1	#00cc99	TrpPlus
+S2_TrpPlus_2	S2_TrpPlus_2	#262626	TrpPlus
+S3_TrpPlus_3	S3_TrpPlus_3	#b366ff	TrpPlus
+
+```
+vim $BASE_DIR/38259/analysis/input/metadata/DE_density_contrasts.tsv
+```
+And then you can run the code:
+
+```
+Rscript $BASE_DIR/software/diff_expr/1_diff_expr.r 38259 all_unique 20 hg19 all_samples replicates
+
+```
 ## 5. GO term
 
 ```
