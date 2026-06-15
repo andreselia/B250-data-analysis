@@ -118,6 +118,10 @@ for t in 2 -2 1.5 -1.5; do echo "bsub -q medium -R \"rusage[mem=30G]\" Rscript $
 REPLICATES!
 if you are using the replicates flag, now for enrichment, you should run this script
 ```
+mkdir /omics/groups/OE0532/internal/Andres/47065_Mus/analysis/output/diff_expr/all_unique_reads20/replicates
+
+mv /omics/groups/OE0532/internal/Andres/47065_Mus/analysis/output/diff_expr/all_unique_reads20/diff_expr_rep* /omics/groups/OE0532/internal/Andres/47065_Mus/analysis/output/diff_expr/all_unique_reads20/replicates/
+
 bsub -q medium -R \"rusage[mem=30G]\" Rscript $BASE_DIR/software/diff_expr/cluster_profiler_2.r 47065_Mus all_unique 20 rep mm10
 
 ```
