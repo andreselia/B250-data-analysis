@@ -118,7 +118,7 @@ for t in 2 -2 1.5 -1.5; do echo "bsub -q medium -R \"rusage[mem=30G]\" Rscript $
 REPLICATES!
 if you are using the replicates flag, now for enrichment, you should run this script
 ```
-bsub -q medium -R \"rusage[mem=30G]\" Rscript $BASE_DIR/software/diff_expr/cluster_profiler_2.r 47065_Mus all_unique 20 2 mm10
+bsub -q medium -R \"rusage[mem=30G]\" Rscript $BASE_DIR/software/diff_expr/cluster_profiler_2.r 47065_Mus all_unique 20 rep mm10
 
 ```
 
