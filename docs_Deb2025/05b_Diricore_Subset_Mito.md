@@ -45,6 +45,8 @@ module load SAMtools/1.20-GCC-14.1.0
 ## 2. Extract reads from bam: 
 
 Input list must contain ENSMBL stable Transcript IDs, no Transcript ID version, no gene symbols!
+Version 1_extract_bam_v2.sh is aimed to work with no Transcript ID version (the main script looks for the transcript ID in the bam file, which contains the version information - you may want to check MT-transcripts.txt format)
+
 ```
 $BASE_DIR/software/diricore_subset/1_extract_bam.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt
 ```
