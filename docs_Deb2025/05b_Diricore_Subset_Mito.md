@@ -90,13 +90,25 @@ Because a few codons are different in cytosolic genes and MT-genes, there are 2 
 ### 2.1 Subsequence plots for the cytosolic genes: 
 
 ```
-bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_MT-transcripts
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_MT-transcripts
 ```
 
 ### 2.2 Subsequence plots for the mitochondiral genes: 
 
 ```
-bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_excl_MT-transcripts
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_excl_MT-transcripts
 ```
 
 For RPF_density analysis the script is the same.
+
+## 3. Plots_only
+
+Sometimes (especially when plotting Mito subsequence results, the y_limits are out of range. You can simply add a fixed value after the plots_only option or you can use the option "max" and the script calculates the proper value
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_MT-transcripts all_samples plots_only max
+```
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_excl_MT-transcripts all_samples plots_only max
+```
