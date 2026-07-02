@@ -42,7 +42,7 @@ This is an updated script. It takes your list, obtains the coordinates for each 
 Once the bed file is generated, it produces one script per sample to directly extract the reads from genome-aligned reads
 
 ```
-$BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh Blanco26 all $BASE_DIR/Blanco26/analysis/output/TE-DOWNtranscripts.txt
+bsub -q medium -R "rusage[mem=50G]" $BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh Blanco26 all $BASE_DIR/Blanco26/analysis/output/TE-UPtranscripts.txt
 ```
 
 Total reads in BAM: 15204
