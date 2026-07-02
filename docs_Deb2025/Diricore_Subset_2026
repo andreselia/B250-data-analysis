@@ -23,20 +23,10 @@ POU2F2
 ```
 
 
-## 0. Create a reference file - skip if already done
-
-Transfer gene symbols to ENSEMBL transcript IDs via BioMart Tool from ENSEMBL.
-Using 'Filter', expand 'Gene', enter your gene list. Choose HGNC symbols as external reference ID list input (e.g. 'MT-ND6).
-Using 'Attributes', expand 'Gene' and check/uncheck the list output parameters.
-Export and format the final list for the column of interest.
+## 0. Create a reference file with you gene list
 
 ```
-cat $BASE_DIR/static/hg19/MT-genes.txt | cut -d '|' -f 1 > $BASE_DIR/static/hg19/MT-transcripts.txt
-```
-or
-
-```
-cat filename | sed 1d | cut -f2 > Final.txt
+vim $BASE_DIR/Blanco26/analysis/output/TE-DOWNtranscripts.txt
 ```
 
 ## 1. Load samtools
@@ -48,14 +38,15 @@ module load SAMtools/1.20-GCC-14.1.0
 
 ## 2. Extract reads from bam: 
 
-Input list must contain ENSMBL stable Transcript IDs, no Transcript ID version, no gene symbols!
-Version 1_extract_bam_v2.sh is aimed to work with no Transcript ID version (the main script looks for the transcript ID in the bam file, which contains the version information - you may want to check MT-transcripts.txt format)
+This is an updated script. It takes your list, obtains the coordinates for each gene and generates a bed file in the tmp folder.
+Once the bed file is generated, it produces one script per sample to directly extract the reads from genome-aligned reads
 
 ```
-$BASE_DIR/software/diricore_subset/1_extract_bam.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt
+$BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh Blanco26 all $BASE_DIR/Blanco26/analysis/output/TE-DOWNtranscripts.txt
 ```
 
-New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subset/all_MT-transcripts/alignments/toGenome`
+Total reads in BAM: 15204
+Stats saved: /omics/groups/OE0532/internal/Andres//Blanco26/analysis/output/diricore_subset/all_TE-DOWNtranscripts/alignments/toGenome/LN229_WT2_30_readstats.tsv
 
 ## 3. Run rpf density analysis: 
 
