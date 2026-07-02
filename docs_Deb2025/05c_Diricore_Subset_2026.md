@@ -23,7 +23,7 @@ POU2F2
 ```
 
 
-## 0. Create a reference file with you gene list
+## 0. Create a reference file with your gene list
 
 ```
 vim $BASE_DIR/Blanco26/analysis/output/TE-DOWNtranscripts.txt
