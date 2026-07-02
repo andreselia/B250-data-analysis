@@ -1,0 +1,120 @@
+# Diricore on subset of genes
+
+Let's consider the following list of Mitochondrial genes: 
+
+```
+ERG
+MST1R
+TPO
+TMC5
+ZIC1
+KIAA1683
+CACNA1B
+ABCG4
+LINGO2
+IFI27
+ELN
+DCDC2
+DMKN
+GNA15
+SYTL4
+POU2F2
+....
+```
+
+
+## 0. Create a reference file - skip if already done
+
+Transfer gene symbols to ENSEMBL transcript IDs via BioMart Tool from ENSEMBL.
+Using 'Filter', expand 'Gene', enter your gene list. Choose HGNC symbols as external reference ID list input (e.g. 'MT-ND6).
+Using 'Attributes', expand 'Gene' and check/uncheck the list output parameters.
+Export and format the final list for the column of interest.
+
+```
+cat $BASE_DIR/static/hg19/MT-genes.txt | cut -d '|' -f 1 > $BASE_DIR/static/hg19/MT-transcripts.txt
+```
+or
+
+```
+cat filename | sed 1d | cut -f2 > Final.txt
+```
+
+## 1. Load samtools
+
+```
+module load SAMtools/1.20-GCC-14.1.0 
+
+```
+
+## 2. Extract reads from bam: 
+
+Input list must contain ENSMBL stable Transcript IDs, no Transcript ID version, no gene symbols!
+Version 1_extract_bam_v2.sh is aimed to work with no Transcript ID version (the main script looks for the transcript ID in the bam file, which contains the version information - you may want to check MT-transcripts.txt format)
+
+```
+$BASE_DIR/software/diricore_subset/1_extract_bam.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt
+```
+
+New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subset/all_MT-transcripts/alignments/toGenome`
+
+## 3. Run rpf density analysis: 
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/rpf_density_analysis.sh 18436 hg19 5 all_MT-transcripts
+```
+
+## 4. Subsequence analysis:
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_MT-transcripts
+```
+
+## 5. RPF transcript distribution:
+
+```
+bsub -q long  -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/plot_rpf_transcript_distribution.sh 18436 hg19 5 all_MT-transcripts
+```
+
+# Diricore EXCLUDING subset of genes
+
+Let's say we want to exclude mitochondial genes from the analysis.
+
+## 1. Extract reads from bam: 
+
+```
+$BASE_DIR/software/diricore_subset/1_extract_bam.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt exclude
+```
+
+New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subset/all_excl_MT-transcripts/alignments/toGenome`
+
+Perform the analysis as described above.
+
+## 2. Difference between MT and cytosolic genes in subsequence analysis
+
+Because a few codons are different in cytosolic genes and MT-genes, there are 2 subsequence scripts. They output the same data files, but the plotting function is different due to the codons annotation. 
+
+### 2.1 Subsequence plots for the cytosolic genes: 
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_MT-transcripts
+```
+
+### 2.2 Subsequence plots for the mitochondiral genes: 
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_excl_MT-transcripts
+```
+
+For RPF_density analysis the script is the same.
+
+## 3. Plots_only
+
+Sometimes (especially when plotting Mito subsequence results, the y_limits are out of range. You can simply add a fixed value after the plots_only option or you can use the option "max" and the script calculates the proper value
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_MT-transcripts all_samples plots_only max
+```
+
+```
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_excl_MT-transcripts all_samples plots_only max
+```
