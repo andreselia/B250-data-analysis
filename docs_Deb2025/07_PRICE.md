@@ -73,7 +73,7 @@ This will provide an output.tsv file in your current working directory about all
 ### 5 Transfer PRICE output to local folder
 
 ```
-scp -r a690a@odcf-worker01.dkfz.de:/omics/groups/OE0532/internal/Andres/45659_AME/analysis/output/PRICE/* ~/analysis/45659_AME/
+scp -rp a690a@odcf-worker01.dkfz.de:/omics/groups/OE0532/internal/Andres/45659_AME/analysis/output/PRICE/* ~/analysis/45659_AME/
 
 ```
 
