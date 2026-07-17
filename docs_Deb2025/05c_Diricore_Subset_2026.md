@@ -59,6 +59,7 @@ bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/rpf_density
 ```
 bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_MT-transcripts
 ```
+Here I edited the script that extracts subsequences to get a report of each filter step. You will see a <hdf5>.qc_report.tsv con cols sample, stage, n_reads, n_distinct_genes. (You can find the unedited version with the suffix "_original.py")
 
 ## 5. RPF transcript distribution:
 
