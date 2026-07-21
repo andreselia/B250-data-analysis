@@ -41,6 +41,10 @@ module load SAMtools/1.20-GCC-14.1.0
 This is an updated script. It takes your list, obtains the coordinates for each gene and generates a bed file in the tmp folder.
 Once the bed file is generated, it produces one script per sample to directly extract the reads from genome-aligned reads
 
+NOTE: for Mito genes first be sure that the bed file contains the chrom names as M and no MT.
+You can fix the bed file with: sed 's/^chrMT/chrM/' /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/Mito-transcripts.bed > /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/MT-transcripts.bed
+
+
 ```
 bsub -q medium -R "rusage[mem=50G]" $BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh Blanco26 all $BASE_DIR/Blanco26/analysis/output/TE-UPtranscripts.txt
 ```
