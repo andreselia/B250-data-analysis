@@ -1,6 +1,6 @@
 # Diricore on subset of genes
 
-Let's consider the following list of Mitochondrial genes: 
+Let's consider the following list of genes: 
 
 ```
 ERG
