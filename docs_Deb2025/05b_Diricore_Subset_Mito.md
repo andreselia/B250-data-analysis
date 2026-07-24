@@ -65,6 +65,17 @@ bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/rpf_density
 bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_MT-transcripts
 ```
 
+As a QC analysis, you can run a test to get a table with read length if they are in frame 0 1 or 2 and also the plots. Don´t forget to target the index table. If you are running another subset of genes, omit this option.
+Results can be found in .../diricore_subset/<subset>/length_frame_qc/
+
+
+```
+bsub -q long -R "rusage[mem=50G]" $BASE_DIR/scripts/scripts_andres/length_frame_distribution.sh 46700 hg19 all_MT-transcripts subseq_index_data_MT.pkl.gz
+
+```
+
+
+
 ## 5. RPF transcript distribution:
 
 ```
