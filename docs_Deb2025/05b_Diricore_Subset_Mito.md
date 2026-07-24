@@ -62,7 +62,7 @@ bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/rpf_density
 ## 4. Subsequence analysis:
 
 ```
-bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_MT-transcripts
+bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_MT-transcripts
 ```
 
 ## 5. RPF transcript distribution:
@@ -89,13 +89,13 @@ Perform the analysis as described above.
 
 Because a few codons are different in cytosolic genes and MT-genes, there are 2 subsequence scripts. They output the same data files, but the plotting function is different due to the codons annotation. 
 
-### 2.1 Subsequence plots for the cytosolic genes: 
+### 2.1 Subsequence plots for the mitochondrial genes: 
 
 ```
 bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis_MT.sh 18436 hg19 5 all_MT-transcripts
 ```
 
-### 2.2 Subsequence plots for the mitochondiral genes: 
+### 2.2 Subsequence plots for the cytosolic genes: 
 
 ```
 bsub -q long -R "rusage[mem=20G]" $BASE_DIR/software/diricore_subset/subsequence_analysis.sh 18436 hg19 5 all_excl_MT-transcripts
