@@ -72,6 +72,8 @@ Results can be found in .../diricore_subset/<subset>/length_frame_qc/
 ```
 bsub -q long -R "rusage[mem=50G]" $BASE_DIR/scripts/scripts_andres/length_frame_distribution.sh 46700 hg19 all_MT-transcripts subseq_index_data_MT.pkl.gz
 
+scp -r -p a690a@odcf-worker01.dkfz.de:/omics/groups/OE0532/internal/Andres//46700/analysis/output/diricore_subset/all_MT-transcripts/length_frame_qc ~/analysis/46700/
+
 ```
 
 
