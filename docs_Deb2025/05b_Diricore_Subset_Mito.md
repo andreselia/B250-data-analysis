@@ -52,6 +52,11 @@ $BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh 22276 all $BASE_DIR/stati
 ```
 
 New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subset/all_MT-transcripts/alignments/toGenome`
+For Mito genes, the bed file needs to be fixed with
+
+```
+sed 's/^chrMT/chrM/' /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/Mito-transcripts.bed > /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/MT-transcripts.bed
+```
 
 ## 3. Run rpf density analysis: 
 
