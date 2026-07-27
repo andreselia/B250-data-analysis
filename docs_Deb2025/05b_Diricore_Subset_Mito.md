@@ -1,4 +1,4 @@
-# Diricore on subset of genes
+<img width="442" height="58" alt="image" src="https://github.com/user-attachments/assets/f53ef213-106b-4bef-b9fc-c7976f465414" /># Diricore on subset of genes
 
 Let's consider the following list of Mitochondrial genes: 
 
@@ -21,18 +21,8 @@ MT-ND6
 
 ## 0. Create a reference file - skip if already done
 
-Transfer gene symbols to ENSEMBL transcript IDs via BioMart Tool from ENSEMBL.
-Using 'Filter', expand 'Gene', enter your gene list. Choose HGNC symbols as external reference ID list input (e.g. 'MT-ND6).
-Using 'Attributes', expand 'Gene' and check/uncheck the list output parameters.
-Export and format the final list for the column of interest.
-
 ```
-cat $BASE_DIR/static/hg19/MT-genes.txt | cut -d '|' -f 1 > $BASE_DIR/static/hg19/MT-transcripts.txt
-```
-or
-
-```
-cat filename | sed 1d | cut -f2 > Final.txt
+vim $BASE_DIR/46700/analysis/output/Mito-transcripts.txt
 ```
 
 ## 1. Load samtools
@@ -44,11 +34,10 @@ module load SAMtools/1.20-GCC-14.1.0
 
 ## 2. Extract reads from bam: 
 
-Input list must contain ENSMBL stable Transcript IDs, no Transcript ID version, no gene symbols!
-Version 1_extract_bam_v2.sh is aimed to work with no Transcript ID version (the main script looks for the transcript ID in the bam file, which contains the version information - you may want to check MT-transcripts.txt format)
+This new script will create a bed file with genomic coordinates, and a list of scripts to bu run in order to extract the reads. Also it will provide the number of reads for each gene.
 
 ```
-$BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt
+bsub -q medium -R "rusage[mem=50G]" $BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh 46700 all $BASE_DIR/46700/analysis/output/MT-transcripts.txt
 ```
 
 New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subset/all_MT-transcripts/alignments/toGenome`
