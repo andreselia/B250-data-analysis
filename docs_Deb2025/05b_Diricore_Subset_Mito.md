@@ -48,7 +48,7 @@ Input list must contain ENSMBL stable Transcript IDs, no Transcript ID version, 
 Version 1_extract_bam_v2.sh is aimed to work with no Transcript ID version (the main script looks for the transcript ID in the bam file, which contains the version information - you may want to check MT-transcripts.txt format)
 
 ```
-$BASE_DIR/software/diricore_subset/1_extract_bam.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt
+$BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt
 ```
 
 New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subset/all_MT-transcripts/alignments/toGenome`
