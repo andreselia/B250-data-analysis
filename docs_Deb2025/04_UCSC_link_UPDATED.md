@@ -67,7 +67,7 @@ Copy & paste these commands to submit the jobs.
 ## 2. Upload .bw files to Nextcloud and create an annotation file
 
 ```
-$BASE_DIR/software/ucsc/2_ucsc_track_nextcloud_and_annotation.sh 44312_HCT species a690a pass nextcloud_id all_unique
+$BASE_DIR/software/ucsc/2_ucsc_track_nextcloud_and_annotation.sh 47681 hg19 a690a all
 ```
 
 This will output the following:
