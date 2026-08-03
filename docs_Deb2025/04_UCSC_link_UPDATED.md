@@ -31,7 +31,9 @@ source ~/.bash_profile
 2- Create the file for usr and password to access Nextcloud. Just add your information to /.netrc
 
 machine hub.dkfz.de
+
 login TU_USUARIO
+
 password TU_PASSWORD
 
 ```
