@@ -23,7 +23,7 @@ export DKFZ_INTERNAL_ID="......."
 ```
 vim ~/.bash_profile
 ```
-# once you add it, refresh with
+Once you add it, refresh with
 ```
 source ~/.bash_profile
 ```
@@ -36,6 +36,8 @@ password TU_PASSWORD
 
 ```
 vim ~/.netrc
+
+chmod 600 ~/.netrc
 ```
 
 
