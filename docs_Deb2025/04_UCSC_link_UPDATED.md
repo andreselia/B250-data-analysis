@@ -15,6 +15,31 @@
  <img width="385" height="744" alt="image" src="https://github.com/user-attachments/assets/dab9eabf-4336-499d-8a1a-73ce68513972" />
 
 
+## 0. Config (to be done once)
+1- Add the token to bash_profile. 
+
+export DKFZ_INTERNAL_ID="......."
+
+```
+vim ~/.bash_profile
+```
+# once you add it, refresh with
+```
+source ~/.bash_profile
+```
+
+2- Create the file for usr and password to access Nextcloud. Just add your information to /.netrc
+
+machine hub.dkfz.de
+login TU_USUARIO
+password TU_PASSWORD
+
+```
+vim ~/.netrc
+```
+
+
+
 ## 1. Create UCSC tracks
 
 ```
