@@ -8,13 +8,24 @@ bsub -q medium -R "rusage[mem=30G]" $BASE_DIR/software/counts/get_counts_symbols
 Output will look like this:
 
 Processing sample: A549_BPTES
+
 Processing sample: A549_CB839
+
 Processing sample: A549_Ctrl
+
 ........
+
 ------------------------------------------------------------
+
 Done. Output files:
+
   /omics/groups/OE0532/internal/....//47681/analysis/output/counts/all_unique/A549_BPTES.gene_counts.tsv
+
   /omics/groups/OE0532/internal/....//47681/analysis/output/counts/all_unique/A549_CB839.gene_counts.tsv
+
 .........
+
 Transcript-to-gene map used:
+
   /omics/groups/OE0532/internal/....//47681/analysis/output/counts/all_unique/transcript_to_gene.hg19.tsv
+
