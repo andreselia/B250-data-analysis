@@ -2,6 +2,7 @@
 This script translates ENST to Gene Symbols and generates a table with the read count for each gene
 
 ´´´
+
 bsub -q medium -R "rusage[mem=30G]" $BASE_DIR/software/counts/get_counts_symbols.sh 47681 all_unique hg19
 
 ´´´
