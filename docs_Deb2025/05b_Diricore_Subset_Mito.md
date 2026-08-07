@@ -1,4 +1,4 @@
-<img width="442" height="58" alt="image" src="https://github.com/user-attachments/assets/f53ef213-106b-4bef-b9fc-c7976f465414" /># Diricore on subset of genes
+# Diricore on subset of genes
 
 Let's consider the following list of Mitochondrial genes: 
 
