@@ -245,4 +245,84 @@ $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_
 └── ...
 ```
 
+## Gene Set Enrichment Analysis (KEGG)
+`gsea_analysis.r` / `run_gsea.sh` -- 
 
+### What it does
+
+Runs preranked GSEA (via `fgsea`) against the full KEGG canonical pathway
+collection (`msigdbr`, category `C2` / `CP:KEGG`). It reuses the fold-change
+tables already produced by `deseq2_analysis.r` -- no data is recomputed.
+
+For a given comparison, it looks for, in order:
+
+1. `results_<contrast_table_name>_<groupB_vs_groupA>.tsv` (produced when you
+   had replicates) -- ranks genes by the **Wald statistic** (`stat` column),
+   the recommended ranking metric for preranked GSEA since it combines
+   direction and statistical confidence.
+2. `log2FC_only_NO_PVALUE_<contrast_table_name>_<groupB_vs_groupA>.tsv`
+   (produced when you had no replicates) -- ranks genes by plain `log2FC` as
+   a fallback. A warning is printed: without proper statistical weighting,
+   the resulting p-values/NES should be interpreted as exploratory only.
+
+### Two run modes
+
+| `filter` argument | Behavior |
+|---|---|
+| omitted / empty (default) | Only the **total** KEGG run (all ~186 canonical pathways tested) |
+| `AA` | Also runs a **second**, restricted GSEA against only the KEGG pathways whose name matches an amino-acid-related keyword (built-in list: the 20 amino acids + `AMINO_ACID` + `AMINOACYL_TRNA`) |
+| any other string | Treated as comma-separated **custom keyword(s)** for the restricted run, e.g. `METABOLISM` for a much broader metabolic filter, or `GLUTAMINE,ASPARTATE` for a narrower custom subset |
+
+### Requirements
+
+```r
+install.packages(c("msigdbr", "fgsea"))
+```
+
+### Usage
+
+```bash
+bsub -q medium -R "rusage[mem=15G]" \
+  $BASE_DIR/software/counts/run_gsea.sh \
+  <project_id> <bam_type> <contrast_table_name> <groupB_vs_groupA> [filter] [species]
+```
+
+| Argument | Description | Default |
+|---|---|---|
+| `project_id` | Project folder name under `$BASE_DIR` | required |
+| `bam_type` | Must match the `bam_type` used upstream | required |
+| `contrast_table_name` | Same contrast table name used in `run_deseq2.sh` | required |
+| `groupB_vs_groupA` | Comparison label exactly as it appears in the `deseq2_analysis.r` output filenames, e.g. `24hr_vs_Ctrl` | required |
+| `filter` | `""` (total only), `AA` (+ amino acid filter), or custom keyword(s) | `""` |
+| `species` | `msigdbr` species name | `Homo sapiens` (use `Mus musculus` for mouse) |
+
+Examples:
+
+```bash
+# Default: total KEGG only
+bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_gsea.sh \
+  47681 all_unique WP_contrast 24hr_vs_Ctrl
+
+# Total KEGG + amino acid metabolism filter
+bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_gsea.sh \
+  47681 all_unique WP_contrast 24hr_vs_Ctrl AA
+
+# Total KEGG + broader metabolism filter (custom keyword)
+bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_gsea.sh \
+  47681 all_unique WP_contrast 24hr_vs_Ctrl METABOLISM
+```
+
+### Output
+
+```
+$BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_name>/gsea_<groupB_vs_groupA>/
+├── gsea_KEGG_total_<contrast_table_name>_<groupB_vs_groupA>.tsv          # all ~186 pathways, sorted by p-value
+├── gsea_KEGG_total_top20_<contrast_table_name>_<groupB_vs_groupA>.pdf    # NES barplot, top 20
+├── gsea_aminoacid_metabolism_<contrast_table_name>_<groupB_vs_groupA>.tsv   # only if filter requested
+├── gsea_aminoacid_metabolism_<contrast_table_name>_<groupB_vs_groupA>.pdf  # NES barplot, all matched sets
+└── gsea_enrichment_curve_top_aminoacid_<contrast_table_name>_<groupB_vs_groupA>.pdf  # classic GSEA curve for the top hit in the filtered set
+```
+
+The `*.tsv` results include standard `fgsea` columns: `pathway`, `pval`,
+`padj`, `NES`, `ES`, `size`, and `leadingEdge` (semicolon-separated list of
+the genes driving the enrichment).
