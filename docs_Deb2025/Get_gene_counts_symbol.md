@@ -70,10 +70,13 @@ Tab-separated, with header, columns `sampleid` and `group`:
  
 ```
 sampleid	group
-A549_Ctrl	control
-A549_BPTES	treated
-A549_CB839	treated
-A549_DON	treated
+HEK293_Ctrl_1	Ctrl
+HEK293_2hr_1	2hr
+HEK293_24hr_1	24hr
+HEK293_Ctrl_2	Ctrl
+HEK293_2hr_2 	2hr
+HEK293_24hr_2	24hr
+
 ```
  
 `sampleid` must match the prefix used by `get_counts_symbols.sh`
