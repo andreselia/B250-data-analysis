@@ -67,6 +67,8 @@ tables never overwrite each other.
 ### Contrast table format
  
 Tab-separated, with header, columns `sampleid` and `group`:
+
+vim $BASE_DIR/47681/analysis/input/metadata/WP_contrast.tsv
  
 ```
 sampleid	group
@@ -86,6 +88,9 @@ HEK293_24hr_2	24hr
  
 Plain text, one gene symbol per line (blank lines and lines starting with
 `#` are ignored):
+
+vim $BASE_DIR/47681/analysis/input/metadata/WP_contrast_genelist.tsv
+
  
 ```
 MT-CO1
