@@ -150,3 +150,99 @@ the end of the run.
   `module load R/4.4.3-GCCcore-14.1.0`, adjust if your environment differs).
 ---
 
+## KEGG pathway visualization
+`pathway_plot.r` / `run_pathway_plot.sh` 
+
+### What it does
+
+Overlays your per-gene log2 fold changes directly onto the official KEGG
+pathway diagram, coloring each enzyme node **red** (up) or **blue** (down)
+relative to zero. It reuses the fold-change tables already produced by
+`deseq2_analysis.r` -- no data is recomputed.
+
+For a given comparison, it looks for, in order:
+
+1. `results_<contrast_table_name>_<groupB_vs_groupA>.tsv` (produced when you
+   had replicates -- uses the `log2FoldChange` column).
+2. `log2FC_only_NO_PVALUE_<contrast_table_name>_<groupB_vs_groupA>.tsv`
+   (produced when you had no replicates -- uses the `log2FC` column).
+
+Whichever exists is used automatically; you don't need to specify which one.
+
+By default it plots a curated set of **amino acid metabolism/biosynthesis**
+KEGG pathways:
+
+| KEGG ID | Pathway |
+|---|---|
+| 00250 | Alanine, aspartate and glutamate metabolism |
+| 00260 | Glycine, serine and threonine metabolism |
+| 00270 | Cysteine and methionine metabolism |
+| 00280 | Valine, leucine and isoleucine degradation |
+| 00290 | Valine, leucine and isoleucine biosynthesis |
+| 00220 | Arginine biosynthesis |
+| 00330 | Arginine and proline metabolism |
+| 00340 | Histidine metabolism |
+| 00350 | Tyrosine metabolism |
+| 00360 | Phenylalanine metabolism |
+| 00380 | Tryptophan metabolism |
+| 00400 | Phenylalanine, tyrosine and tryptophan biosynthesis |
+| 00410 | beta-Alanine metabolism |
+| 00300 | Lysine biosynthesis |
+| 00310 | Lysine degradation |
+| 00970 | Aminoacyl-tRNA biosynthesis |
+
+You can override this list with any comma-separated KEGG pathway IDs.
+
+### Requirements
+
+Bioconductor packages, installed once:
+
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+BiocManager::install(c("pathview", "org.Hs.eg.db"))
+# for mouse:
+BiocManager::install("org.Mm.eg.db")
+```
+
+`pathview` needs internet access the first time it plots a given pathway
+(it downloads and locally caches the KEGG reference diagram).
+
+### Usage
+
+```bash
+bsub -q medium -R "rusage[mem=15G]" \
+  $BASE_DIR/software/counts/run_pathway_plot.sh \
+  <project_id> <bam_type> <contrast_table_name> <groupB_vs_groupA> [pathway_ids] [species]
+```
+
+| Argument | Description | Default |
+|---|---|---|
+| `project_id` | Project folder name under `$BASE_DIR` | required |
+| `bam_type` | Must match the `bam_type` used upstream | required |
+| `contrast_table_name` | Same contrast table name used in `run_deseq2.sh` | required |
+| `groupB_vs_groupA` | Comparison label exactly as it appears in the `deseq2_analysis.r` output filenames, e.g. `24hr_vs_Ctrl` | required |
+| `pathway_ids` | Comma-separated KEGG pathway IDs (no species prefix) | amino acid pathway list above |
+| `species` | KEGG species code | `hsa` (human); use `mmu` for mouse |
+
+Examples:
+
+```bash
+# All default amino acid pathways
+bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_pathway_plot.sh \
+  47681 all_unique WP_contrast 24hr_vs_Ctrl
+
+# Just arginine/proline metabolism
+bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_pathway_plot.sh \
+  47681 all_unique WP_contrast 24hr_vs_Ctrl 00330
+```
+
+### Output
+
+```
+$BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_name>/pathview_<groupB_vs_groupA>/
+├── hsa00250.<groupB_vs_groupA>.png   # colored pathway diagram
+├── hsa00330.<groupB_vs_groupA>.png
+└── ...
+```
+
+
