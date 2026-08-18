@@ -39,7 +39,7 @@ module load R/4.4.3-GCCcore-14.1.0
 Run from the command line:
 
 ```
- bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v2.r <project_id> <species> <celltype1_celltype2_...> <min_peptide_length>
+ bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v3.r <project_id> <species> <celltype1_celltype2_...> <min_peptide_length>
 ```
 
 
@@ -51,7 +51,7 @@ Run from the command line:
 Example:
 
 ```
- bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v2.r 43979 mm10 NP5_TC1 10
+ bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v3.r 43979 mm10 NP5_TC1 10
 ```
 
 ---
