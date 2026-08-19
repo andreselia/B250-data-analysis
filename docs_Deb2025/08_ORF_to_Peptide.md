@@ -39,7 +39,7 @@ module load R/4.4.3-GCCcore-14.1.0
 Run from the command line:
 
 ```
- bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v3.r <project_id> <species> <celltype1_celltype2_...> <min_peptide_length>
+ bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v4.r <project_id> <species> <celltype1_celltype2_...> <min_peptide_length>
 ```
 
 
@@ -51,68 +51,73 @@ Run from the command line:
 Example:
 
 ```
- bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v3.r 43979 mm10 NP5_TC1 10
+ bsub -q long -R rusage[mem=40G] Rscript /omics/groups/OE0532/internal/Andres//scripts/scripts_andres/ORF_dna_to_peptide_table_v4.r 43979 mm10 NP5_TC1 10
 ```
 
 ---
 
 ## Analysis Pipeline Steps
 
-1. **File loading:**  
-   Reads all PRICE ORF output TSV files in the project folder excluding "ORF_tables" subfolders.
-
-2. **Filtering:**  
-   Keeps ORFs matching regex `"ORF"` in the `Type` column and with `p value < 0.05`.
-
-3. **Chromosome, strand, and exon range parsing:**  
-   Extracts genomic locations from the `Location` column, adjusting start positions by +1, honoring strand direction.
-
-4. **Sequence extraction:**  
-   Uses BSgenome objects (e.g., `BSgenome.Mmusculus.UCSC.mm10`) to extract exon sequences for each ORF, concatenating exons in correct order and applying reverse complement for negative strands.
-
-5. **Translation:**  
-   Spliced DNA sequences are translated to peptides using the `Biostrings::translate` function.
-
-6. **Peptide and ORF properties:**  
-   Calculates peptide length, stop codon position, and codon start concordance.
-
-7. **Output per sample:**  
-   Saves detailed TSV tables with DNA and peptide sequences for each sample separately. Generates peptide FASTA files for each sample applying minimum peptide length filtering.
-
-8. **Summary plots:**  
-   Produces four plots per sample: peptide length histogram, initiation codon frequencies, stop codon distribution, and ORF type frequencies; saved as PDFs.
-
-9. **Merging and filtering by celltypes:**  
-   Combines all per-sample data and filters by specified celltypes, consolidating treatments. Saves filtered combined tables per celltype.
-
-10. **Unique peptide identification:**  
-    For each celltype, identifies peptides unique to a single treatment group (based on peptide sequence) and writes a unique peptides table and corresponding FASTA file.
-
+## Step 1 — Process each PRICE file (in parallel)
+ 
+For every `*.orfs.tsv` file found:
+ 
+1. Reads PRICE's columns (`Gene`, `Id`, `Location`, `Candidate Location`, `Codon`, `Type`, `Start`, `Range`, `p value`, `Total`).
+2. Assigns a unique `Sample` name based on the file's full relative path (prevents two files that share a parent-folder name from overwriting each other).
+3. Parses `Location` to extract chromosome, strand, and the coordinates of each exon (an ORF can have several exons separated by `|`). PRICE's start coordinates are 0-based, so the script adds **+1** to each exon's start position to convert it to the 1-based coordinates that `getSeq()`/`GRanges` expect. The end coordinate is used as-is.
+4. **Extracts the spliced DNA sequence** (`Spliced_DNA`) from the reference genome, joining exons together and reverse-complementing when the strand is `-`.
+5. **Translates to peptide** (`Peptide_Sequence`), discarding sequences with invalid characters.
+6. Computes `Peptide_Length`.
+**Output of this step:**
+- `full_<sample>.tsv` — one table per input file, with all original PRICE columns plus `Spliced_DNA`, `Peptide_Sequence`, `Peptide_Length`, `chr`, `strand`, `ranges`.
+## Step 2 — Combine by celltype
+ 
+For each celltype (e.g. `BJ`, `Sen`):
+ 
+1. Merges all `full_<sample>.tsv` files belonging to that celltype.
+2. Extracts `CellType` and `Treatment` from the sample name (a sample with no treatment suffix — e.g. `Sen` on its own — gets `Treatment = "none"`).
+**Output:**
+- `full_combined_<celltype>.tsv` — all samples of that celltype together, unfiltered.
+## Step 3 — Filter and split by treatment
+ 
+On the combined table, filters:
+- Excludes `Type` values `Variant`, `ncRNA`, `orphan`, `Trunc`, `CDS` (keeps the non-canonical ORFs: uORF, uoORF, iORF, etc.)
+- `p value < 0.05`
+- `Peptide_Length >= min_peptide_length` (the script's 4th argument)
+For each treatment within the celltype:
+ 
+**Output (per celltype + treatment):**
+- `filtered_<celltype>_<treatment>.tsv` — filtered rows for that combination
+- `filtered_peptides_<celltype>_<treatment>.fasta` — peptides in FASTA format (header `>Sample_Id`)
+- `plots_<celltype>_<treatment>.pdf` — 4 plots: peptide length distribution by Type, combined length distribution, Type frequency (%), start-codon frequency
+- `table_peptide_length_by_type_<celltype>_<treatment>.tsv` — frequency table behind the first plot
+## Step 4 — Unique vs. shared peptides
+ 
+On the already-filtered table (Step 3), groups by peptide sequence:
+ 
+- **Unique** (`n_distinct(Treatment) == 1`): peptides found in only one treatment.
+- **Shared** (`n_distinct(Treatment) > 1`): peptides present in more than one treatment of the same celltype.
+**Output (per celltype):**
+- `unique_peptides_<celltype>.tsv` / `.fasta`
+- `shared_peptides_<celltype>.tsv` / `.fasta` (header includes the IDs and treatments where each shared peptide appears)
 ---
-
-## Output Structure
-
-All output files (tables, FASTA, plots) are saved under:
-
-```
-$BASE_DIR/<project_id>/analysis/output/PRICE/ORF_to_Peptide/
-```
-
-- `ORF_with_sequences_<SampleName>.tsv`  
-- `peptides_<SampleName>.fasta`  
-- `ORF_summary_plot_<SampleName>.pdf`  
-- `ORF_with_sequences_<CellType>.tsv`  
-- `unique_peptides_<CellType>.tsv`  
-- `unique_peptides_<CellType>.fasta`  
-
----
-
-## Notes
-
-- The pipeline assumes correct installation of required Bioconductor and CRAN packages.
-- Coordinate manipulation (+1) and strand-aware reverse complementation preserve genomic integrity.
-- Filtering is customizable by altering `p value` and `min_peptide_length` parameters.
-- Merging celltypes allows multi-treatment comparison while keeping sample-level resolution via individual outputs.
-
----
-
+ 
+## Summary of generated files
+ 
+| File | Level | Content |
+|---|---|---|
+| `full_<sample>.tsv` | per sample | full table with DNA + translated peptide |
+| `full_combined_<celltype>.tsv` | per celltype | all samples merged, unfiltered |
+| `filtered_<celltype>_<treatment>.tsv` | celltype+treatment | rows passing the significance/type/length filters |
+| `filtered_peptides_<celltype>_<treatment>.fasta` | celltype+treatment | filtered peptides in FASTA |
+| `plots_<celltype>_<treatment>.pdf` | celltype+treatment | exploratory plots |
+| `table_peptide_length_by_type_<celltype>_<treatment>.tsv` | celltype+treatment | length-by-Type frequency table |
+| `unique_peptides_<celltype>.tsv` / `.fasta` | celltype | peptides exclusive to one treatment |
+| `shared_peptides_<celltype>.tsv` / `.fasta` | celltype | peptides present in 2+ treatments |
+ 
+## Notes / known limitations
+ 
+- **Coordinate convention:** PRICE reports exon start positions 0-based; the script converts them to 1-based (`start + 1`) before querying the genome. If you ever compare raw `Location` values against the extracted `Spliced_DNA`/genome coordinates by hand, remember the start you see in `Location` is 1 less than what was actually fetched.
+- If a celltype or celltype+treatment combination has no rows left after filtering, that file simply isn't generated (a message is logged, it's not an error).
+- The script assumes a `<CellType>_<Treatment>` naming convention in PRICE's file/folder names; a sample with no `_` is treated as `Treatment = "none"`.
+- Requires that duplicate/stale run folders (e.g. an old `ZT/` run) already be removed from the input directory beforehand — the script doesn't auto-detect or exclude them, it only excludes `ORF_tables/` and `ORF_Files/`.
