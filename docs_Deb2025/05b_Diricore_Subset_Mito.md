@@ -33,6 +33,7 @@ module load SAMtools/1.20-GCC-14.1.0
 ```
 
 ## 2. Extract reads from bam: 
+NOTE: this script will work only with hg19. Next update will include mm10
 
 This new script will create a bed file with genomic coordinates, and a list of scripts to bu run in order to extract the reads. Also it will provide the number of reads for each gene.
 
