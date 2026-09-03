@@ -44,7 +44,7 @@ New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subs
 For Mito genes, the bed file needs to be fixed with
 
 ```
-sed 's/^chrMT/chrM/' /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/Mito-transcripts.bed > /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/MT-transcripts.bed
+sed -i.bak 's/^chrMT/chrM/' /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/MT-transcripts.bed > /omics/groups/OE0532/internal/Andres//tmp/ext_diricore/46700/MT-transcripts.bed
 ```
 
 ## 3. Run rpf density analysis: 
