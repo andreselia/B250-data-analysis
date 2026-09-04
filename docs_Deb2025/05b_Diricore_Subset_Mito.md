@@ -86,7 +86,7 @@ Let's say we want to exclude mitochondial genes from the analysis.
 ## 1. Extract reads from bam: 
 
 ```
-$BASE_DIR/software/diricore_subset/1_extract_bam.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt exclude
+$BASE_DIR/software/diricore_subset/1_extract_bam_v4.sh 22276 all $BASE_DIR/static/hg19/MT-transcripts.txt exclude
 ```
 
 New bam files will be written to: `$BASE_DIR/22276/analysis/output/diricore_subset/all_excl_MT-transcripts/alignments/toGenome`
