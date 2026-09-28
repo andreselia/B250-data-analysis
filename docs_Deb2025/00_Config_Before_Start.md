@@ -95,8 +95,12 @@ micromamba create --name p3 --file /omics/groups/OE0532/internal/Andres/Deb_Conf
 ```
 
 4. Once installation is done, activate env: `micromamba activate p3`
+and then install pip dependencies:
+```
+pip install -r /omics/groups/OE0532/internal/Andres/Deb_Config_Files/p3_andres_pip.txt
+```
 
-5. Advice: Now add `module load Micromamba/2.0.2-0` and `micromamba activate p3` to your bash profile, to automatically load the package and activate this virtual env.
+6. Advice: Now add `module load Micromamba/2.0.2-0` and `micromamba activate p3` to your bash profile, to automatically load the package and activate this virtual env.
 
 
 
