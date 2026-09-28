@@ -91,7 +91,7 @@ micromamba shell init --shell bash --root-prefix=~/Micromamba
 
 3. Create your python 3 environment with important packages/ dependencies:
 ```
-micromamba create --name p3 --file /omics/groups/OE0532/internal/Andres/Deb_Config_files/p3.yml
+micromamba create --name p3 --file /omics/groups/OE0532/internal/Andres/Deb_Config_Files/p3.yml
 ```
 
 4. Once installation is done, activate env: `micromamba activate p3`
