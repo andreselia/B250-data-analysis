@@ -48,7 +48,7 @@ Transcript-to-gene map used:
 possible (zero residual degrees of freedom, true for any method). The
 script detects this automatically, skips `DESeq()`, and instead exports
 plain point-estimate log2FC (no p-value) plus VST in blind mode -- all
-those filenames get a `_NO_STATS_blindVST` / `NO_PVALUE` suffix so they're
+those filenames get a `_NO_STATS_blindVST` / `NO_PVALUE` suffix so 
 never confused with a real statistical result.
 
 ### Contrast table format
