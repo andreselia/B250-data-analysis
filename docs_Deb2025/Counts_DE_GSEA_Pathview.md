@@ -38,9 +38,14 @@ Transcript-to-gene map used:
 2. Builds a raw counts matrix from `*.gene_counts.tsv` files.
 3. Runs `DESeq2` (`~group`, low-count filter `rowSums >= 10`) and exports
    **every pairwise comparison** between groups (e.g. `Ctrl`/`2hr`/`24hr` ->
-   `2hr_vs_Ctrl`, `24hr_vs_Ctrl`, `24hr_vs_2hr`).
+   `2hr_vs_Ctrl`, `24hr_vs_Ctrl`, `24hr_vs_2hr`). Optional columns of the
+   contrast table add a **batch** correction (`~batch + group`) or **split the
+   comparisons** by another variable (e.g. `state`), including a test of
+   whether the effect differs between its levels (interaction).
 4. Exports VST-normalized counts (all genes) and linear normalized counts.
-5. For a user-supplied gene list: boxplot, row-z-score heatmap, and two QC
+5. Draws a **PCA** of the samples (and, with a batch column, a second PCA with
+   the batch effect removed).
+6. For a user-supplied gene list: boxplot, row-z-score heatmap, and two QC
    histograms (all genes vs. selected genes, same x-axis) -- all covering
    every sample in the contrast table.
 
@@ -49,7 +54,10 @@ possible (zero residual degrees of freedom, true for any method). The
 script detects this automatically, skips `DESeq()`, and instead exports
 plain point-estimate log2FC (no p-value) plus VST in blind mode -- all
 those filenames get a `_NO_STATS_blindVST` / `NO_PVALUE` suffix so 
-never confused with a real statistical result.
+never confused with a real statistical result. With a split variable
+(e.g. `state`), "group" means every combination of that variable and
+`group`, and the log2FC are computed within each level (plus their
+difference when there are two levels).
 
 ### Contrast table format
 
@@ -82,6 +90,45 @@ HEK293_Ctrl_2   Ctrl    1
 HEK293_2hr_2    2hr     2
 HEK293_24hr_2   24hr    3
 ```
+
+Leading/trailing spaces in any field are removed, so a stray space after a
+`sampleid` no longer breaks the lookup of its counts file.
+
+**Optional columns**
+
+| Column | Effect |
+|---|---|
+| `order` / `priority` | Comparison direction (see above) |
+| `batch` | Only adjusts the model: design `~batch + group`. Use it for library preparation batches, sequencing runs, or paired replicates (e.g. `Ctrl_1`/`2hr_1` processed together). Each batch must contain more than one group, otherwise the script stops. Ignored without replicates. |
+| any other column (e.g. `state`) | **Splits the comparisons**: groups are compared within each level of that column. With exactly two levels, the difference between the two effects is also tested (interaction). |
+
+Example: effect of gc7 in proliferating and in senescent cells, and whether
+the two effects differ (two replicates per combination, two batches):
+
+```
+sampleid        group   state   batch
+BJ_pro          Ctrl    pro     rep2
+BJ_pro_gc7      gc7     pro     rep2
+BJ_sen          Ctrl    sen     rep2
+BJ_sen_gc7      gc7     sen     rep2
+BJ_pro1         Ctrl    pro     rep1
+BJ_pro1_gc7     gc7     pro     rep1
+BJ_sen1         Ctrl    sen     rep1
+BJ_sen1_gc7     gc7     sen     rep1
+```
+
+Every combination of `state` and `group` becomes one level of the model
+(`pro_Ctrl`, `pro_gc7`, `sen_Ctrl`, `sen_gc7`), the design is
+`~batch + combo`, and all eight samples are fitted together. Comparisons:
+
+| Comparison label | Question |
+|---|---|
+| `gc7_vs_Ctrl_in_pro` | Effect of gc7 in proliferating cells |
+| `gc7_vs_Ctrl_in_sen` | Effect of gc7 in senescent cells |
+| `gc7_vs_Ctrl_sen_minus_pro` | Is the effect of gc7 different in senescent cells? (interaction: `log2FoldChange` = difference between the two effects) |
+
+A non-significant interaction does not show that the two effects are equal;
+interaction tests need more replicates than simple comparisons.
 
 ### Gene list format
 
@@ -123,9 +170,11 @@ bsub -q medium -R "rusage[mem=30G]" $BASE_DIR/software/counts/run_deseq2.sh \
 ```
 $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_name>/
 ├── raw_counts_matrix_<contrast_table_name>.tsv
-├── results_<contrast_table_name>_<groupB>_vs_<groupA>.tsv       # or log2FC_only_NO_PVALUE_* if no replicates
+├── results_<contrast_table_name>_<comparison>.tsv               # or log2FC_only_NO_PVALUE_* if no replicates
 ├── normalized_transformed_counts_<contrast_table_name>.tsv      # VST, all genes
 ├── normalized_counts_linear_<contrast_table_name>.tsv
+├── pca_<contrast_table_name>.pdf / .tsv                         # PCA plot + PC coordinates
+├── pca_batch_corrected_<contrast_table_name>.pdf / .tsv         # only with a batch column
 ├── qc_histogram_all_genes_<contrast_table_name>.pdf
 ├── qc_histogram_selected_genes_<contrast_table_name>.pdf
 ├── selected_genes_normalized_transformed_counts_<contrast_table_name>.tsv
@@ -133,12 +182,24 @@ $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_
 └── selected_genes_heatmap_<contrast_table_name>.pdf              # row z-score
 ```
 
+`<comparison>` is `<groupB>_vs_<groupA>`; with a split variable,
+`<groupB>_vs_<groupA>_in_<level>` and `<groupB>_vs_<groupA>_<level2>_minus_<level1>`.
 (Without replicates, filenames carry `_NO_STATS_blindVST` instead of the
-plain contrast table name.) All paths are printed in the `bsub` job log.
+plain contrast table name.) All paths, and the number of genes with
+`padj < 0.05` per comparison, are printed in the `bsub` job log.
+
+**PCA.** Computed on the VST counts of the 500 most variable genes (as
+`DESeq2::plotPCA`). Points are colored by `group`, shaped by the split
+variable (or by `batch`), and labeled with the `sampleid`. With a `batch`
+column, `pca_batch_corrected_*` shows the same PCA after removing the batch
+effect with `limma::removeBatchEffect` (for visualization only; the
+statistics use the batch term in the DESeq2 model). The `.tsv` files contain
+the coordinates of the first principal components.
 
 ### Requirements
 
 R with `DESeq2`, `ggplot2`, `pheatmap` (`module load R/4.4.3-GCCcore-14.1.0`).
+Optional: `limma`, for the batch-corrected PCA.
 
 
 ## KEGG pathway visualization
@@ -211,7 +272,7 @@ bsub -q medium -R "rusage[mem=15G]" \
 | `project_id` | Project folder name under `$BASE_DIR` | required |
 | `bam_type` | Must match the `bam_type` used upstream | required |
 | `contrast_table_name` | Same contrast table name used in `run_deseq2.sh` | required |
-| `groupB_vs_groupA` | Comparison label exactly as it appears in the `deseq2_analysis.r` output filenames, e.g. `24hr_vs_Ctrl` | required |
+| `groupB_vs_groupA` | Comparison label exactly as it appears in the `deseq2_analysis.r` output filenames, e.g. `24hr_vs_Ctrl`, or with a split variable `gc7_vs_Ctrl_in_pro` / `gc7_vs_Ctrl_sen_minus_pro` | required |
 | `pathway_ids` | Comma-separated KEGG pathway IDs (no species prefix) | amino acid pathway list above |
 | `species` | KEGG species code | `hsa` (human); use `mmu` for mouse |
 
@@ -283,7 +344,7 @@ bsub -q medium -R "rusage[mem=15G]" \
 | `project_id` | Project folder name under `$BASE_DIR` | required |
 | `bam_type` | Must match the `bam_type` used upstream | required |
 | `contrast_table_name` | Same contrast table name used in `run_deseq2.sh` | required |
-| `groupB_vs_groupA` | Comparison label exactly as it appears in the `deseq2_analysis.r` output filenames, e.g. `24hr_vs_Ctrl` | required |
+| `groupB_vs_groupA` | Comparison label exactly as it appears in the `deseq2_analysis.r` output filenames, e.g. `24hr_vs_Ctrl`, or with a split variable `gc7_vs_Ctrl_in_pro` / `gc7_vs_Ctrl_sen_minus_pro` | required |
 | `filter` | `""` (total only), `AA` (+ amino acid filter), or custom keyword(s) | `""` |
 | `species` | `msigdbr` species name | `Homo sapiens` (use `Mus musculus` for mouse) |
 
