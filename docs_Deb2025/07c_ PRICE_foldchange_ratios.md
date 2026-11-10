@@ -49,7 +49,7 @@ The size factors cancel in the ratio, so this measure does not depend on the nor
 | Gene counts  | `${BASE_DIR}/<PROJID>/analysis/output/counts/all_unique/<sample>.gene_counts.tsv` |
 | Sample sheet | Any path, given as an argument                                                    |
 
-**Gene counts.** The first column must be the gene ID and the last column the counts. featureCounts output and simple two-column tables both work. Summary rows starting with `__` or `N_` are ignored.
+**Gene counts.** The first column must be the gene ID and the last column the counts. featureCounts output and simple two-column tables both work. Summary rows starting with `__` or `N_` are ignored. Gene IDs can be Ensembl IDs (with or without version), Entrez IDs or gene symbols; the script detects the type from the majority of the IDs and matches them to the Ensembl IDs of the PRICE table to compute the ORF / gene ratio. With symbols, genes whose symbol is outdated (common in hg19 annotations) are matched through their previous symbols (aliases) when this is unambiguous.
 
 **Sample names.** Each sample name must match:
 
@@ -77,6 +77,7 @@ A tab-separated file with the columns `sample` and `condition`. Any additional c
 
 - `condition` is the factor being compared. Every value is compared against `REFERENCE`, so `REFERENCE` must be a value of this column, not of a covariate.
 - Covariates are adjusted for. With replicates, the DESeq2 design is `~ covariates + condition`. Without replicates, fold changes are computed separately within each level of the covariates.
+- A column named `batch` is special: it only adjusts the DESeq2 model (library preparation batch, sequencing run, or paired replicates such as `ctrl2`/`iri2`). It does not define separate comparisons and is ignored when there are no replicates. Each batch must contain more than one condition; otherwise the batch effect cannot be separated from the condition and the script stops.
 
 To compare a different factor, move it to the `condition` column and turn the other one into a covariate.
 
@@ -97,6 +98,22 @@ $BASE_DIR/scripts/scripts_andres/run_price_joint_deseq2.R 48138_AE hg19 samples_
 ```
 
 Output: `48138_AE_hg19_joint.iri_vs_ctrl.deseq2.tsv`
+
+### Example with replicates and batch
+
+If `ctrl2` and `iri2` were processed together, and so on:
+
+```
+sample	condition	batch
+HT29_ctrl2	ctrl	rep2
+HT29_ctrl3	ctrl	rep3
+HT29_ctrl4	ctrl	rep4
+HT29_iri2	iri	rep2
+HT29_iri3	iri	rep3
+HT29_iri4	iri	rep4
+```
+
+The design becomes `~ batch + condition`: iri is compared with ctrl within each batch, which removes differences between batches. The output file name does not change.
 
 ### Example without replicates (descriptive fold changes)
 
@@ -221,7 +238,9 @@ The second column is a sanity check. Similar values mean that the normalization 
 | `Gene counts not found`                              | Check the name of the file `<sample>.gene_counts.tsv`                               |
 | `Package '...' is not installed`                     | Install it with the `BiocManager::install()` command shown in the error             |
 | `The design ... leaves no residual degrees of freedom` | Use fewer covariates                                                              |
+| `The design ... cannot be fitted: a covariate (e.g. batch) is confounded with the condition` | Each batch must contain more than one condition; otherwise remove the column |
 | `BASE_DIR is not defined`                            | Define `BASE_DIR` in your `~/.bashrc`                                               |
+| `No translated ORF could be matched to a gene`       | The gene IDs of the counts do not match those of PRICE; the warning shows examples of both. The analysis still runs, but the gene and ratio columns are `NA` |
 
 ## References
 
