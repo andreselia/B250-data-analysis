@@ -76,7 +76,7 @@ The script runs in less than a minute.
 A tab-separated file with the columns `sample` and `condition`. Any additional column is used as a covariate.
 
 - `condition` is the factor being compared. Every value is compared against `REFERENCE`, so `REFERENCE` must be a value of this column, not of a covariate.
-- Covariates are adjusted for. With replicates, the DESeq2 design is `~ covariates + condition`. Without replicates, fold changes are computed separately within each level of the covariates.
+- Covariates other than `batch` (e.g. `state`) split the comparisons: the condition is compared within each of their levels (gc7 vs ctrl in pro, and in sen). With exactly two levels, the script also reports the difference between the two effects. With replicates these comparisons come with p values, and the difference is a test of interaction (does the effect of the condition differ between the levels?).
 - A column named `batch` is special: it only adjusts the DESeq2 model (library preparation batch, sequencing run, or paired replicates such as `ctrl2`/`iri2`). It does not define separate comparisons and is ignored when there are no replicates. Each batch must contain more than one condition; otherwise the batch effect cannot be separated from the condition and the script stops.
 
 To compare a different factor, move it to the `condition` column and turn the other one into a covariate.
@@ -115,6 +115,34 @@ HT29_iri4	iri	rep4
 
 The design becomes `~ batch + condition`: iri is compared with ctrl within each batch, which removes differences between batches. The output file name does not change.
 
+### Example with replicates, covariate and batch
+
+Effect of gc7 in proliferating and in senescent cells, and whether the two effects differ. Two replicates per group, processed in two batches:
+
+```
+sample	condition	state	batch
+BJ_pro	ctrl	pro	rep2
+BJ_pro_gc7	gc7	pro	rep2
+BJ_sen	ctrl	sen	rep2
+BJ_sen_gc7	gc7	sen	rep2
+BJ_pro1	ctrl	pro	rep1
+BJ_pro1_gc7	gc7	pro	rep1
+BJ_sen1	ctrl	sen	rep1
+BJ_sen1_gc7	gc7	sen	rep1
+```
+
+```bash
+$BASE_DIR/scripts/scripts_andres/run_price_joint_deseq2.R 48138_AB hg19 AB_contrast_gc7.tsv ctrl
+```
+
+Each combination of state and condition becomes a group (`pro_ctrl`, `pro_gc7`, `sen_ctrl`, `sen_gc7`) and the design is `~ batch + group`. All eight samples are fitted together, so every comparison uses all of them to estimate variability and the batch effect. The output `48138_AB_hg19_joint.gc7_vs_ctrl.deseq2.tsv` contains three comparisons:
+
+| Comparison                    | Question                                               |
+| ----------------------------- | ------------------------------------------------------ |
+| `gc7_vs_ctrl_in_pro`          | Effect of gc7 in proliferating cells                   |
+| `gc7_vs_ctrl_in_sen`          | Effect of gc7 in senescent cells                       |
+| `gc7_vs_ctrl_sen_minus_pro`   | Is the effect of gc7 different in senescent cells? (interaction) |
+
 ### Example without replicates (descriptive fold changes)
 
 To compare gc7-treated with untreated cells, separately in proliferating and in senescent cells:
@@ -142,7 +170,7 @@ The script chooses the mode from the sample sheet:
 | At least one combination of condition and covariates appears more than once | DESeq2                  | `.deseq2.tsv`  |
 | Every combination appears only once                                         | Descriptive log2 fold changes | `.log2fc.tsv`  |
 
-**DESeq2 mode.** DESeq2 is run on the ORF counts with the size factors from the gene counts. Each condition is tested against the reference.
+**DESeq2 mode.** DESeq2 is run on the ORF counts with the size factors from the gene counts. Without covariates (other than `batch`), each condition is tested against the reference with the design `~ batch + condition`. With covariates, every combination of covariates and condition becomes a group, the design is `~ batch + group`, and the comparisons are made within each level of the covariates, plus the interaction when there are two levels (see the example above).
 
 In both modes the gene fold change is computed the same way as the ORF fold change, so `ratio_log2FC` is directly the difference of the two columns. In DESeq2 mode the gene fold change comes from DESeq2 on the gene counts, with the same design and size factors. The ratio fold change is descriptive in both modes (no p value).
 
@@ -192,17 +220,17 @@ All rows of the PRICE table are kept. Comparison columns are `NA` for ORFs that 
 | `<sample>_gene_norm`           | Normalized gene counts of the ORF's gene                                        |
 | `<sample>_ratio`               | `<sample>_norm / <sample>_gene_norm`                                             |
 
-DESeq2 mode adds, for each comparison:
+DESeq2 mode adds, for each comparison. `<comparison>` is `<cond>_vs_<ref>` without covariates, or `<cond>_vs_<ref>_in_<level>` and `<cond>_vs_<ref>_<level2>_minus_<level1>` with covariates:
 
 | Column                                     | Meaning                                    |
 | ------------------------------------------ | ------------------------------------------ |
 | `baseMean`                                 | Mean of the normalized counts              |
-| `<cond>_vs_<ref>_log2FoldChange`           | log2 fold change                           |
-| `<cond>_vs_<ref>_lfcSE`                    | Standard error of the log2 fold change     |
-| `<cond>_vs_<ref>_stat`                     | Wald statistic                             |
-| `<cond>_vs_<ref>_pvalue`, `_padj`          | p value and Benjamini-Hochberg adjusted p value |
-| `<cond>_vs_<ref>_gene_log2FC`              | log2 fold change of the ORF's gene (DESeq2 on the gene counts) |
-| `<cond>_vs_<ref>_ratio_log2FC`             | `log2FoldChange − gene_log2FC`             |
+| `<comparison>_log2FoldChange`              | log2 fold change (for `_minus_`: difference between the two log2 fold changes) |
+| `<comparison>_lfcSE`                       | Standard error of the log2 fold change     |
+| `<comparison>_stat`                        | Wald statistic                             |
+| `<comparison>_pvalue`, `_padj`             | p value and Benjamini-Hochberg adjusted p value |
+| `<comparison>_gene_log2FC`                 | log2 fold change of the ORF's gene (DESeq2 on the gene counts) |
+| `<comparison>_ratio_log2FC`                | `log2FoldChange − gene_log2FC`             |
 
 Descriptive mode adds, for each comparison:
 
