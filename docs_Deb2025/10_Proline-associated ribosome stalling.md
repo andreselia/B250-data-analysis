@@ -16,6 +16,7 @@ Results are written to `$BASE_DIR/<projid>/analysis/output/eIF5A_pausing/all/`. 
 ## Why
 
 - Ribosomes form peptide bonds slowly at consecutive prolines (PP, PPP, PPG, PPD). Hypusinated eIF5A resolves these stalls and also helps termination.
+- The two causes leave ribosomes in different positions, so each is read at its own position. P-sites are never shifted.
 - These stalls appear in Ribo-seq as extra footprints at Pro-Pro motifs and at stop codons. Their context tells two causes apart:
   - **Less active eIF5A** (e.g. the hypusination inhibitor GC7): stalling where both the P and A sites hold Pro.
   - **Proline shortage**: stalling at any Pro codon in the A site, whatever the context.
@@ -33,7 +34,7 @@ Two separate analyses, each with its own output folder:
 | Analysis | Genes | Steps |
 |---|---|---|
 | **A1 — CDS** | All coding genes | **1.1** P-site QC (read lengths, 3-nt periodicity)<br>**1.2** Start/stop metaprofiles; change of initiation and termination peaks<br>**1.3** Ribosome occupancy by amino acid and codon at the E, P and A sites (comparable to diricore)<br>**1.4** uORF start vs stop peaks (uses PRICE ORFs, optional) |
-| **A2 — Proline genes** | Genes classified by Pro motifs: PPP / PP only / no PP | **2.1** Pro-motif counts per gene<br>**2.2** Pausing at every E-P-A tripeptide; tests by motif class; profiles centred on PPP, PPG, PPD and PP<br>**2.3** Gene-level footprint change by proline class<br>**2.4** Ribosome queueing before the first PPP<br>**2.5** Gene-level pause index at PP sites<br>**2.2c / 2.5** Similarity between all comparisons |
+| **A2 — Proline genes** | Genes classified by Pro motifs: PPP / PP only / no PP | **2.1** Pro-motif counts per gene<br>**2.2** Pausing at Pro motifs, position by position (eIF5A readout = 2nd Pro in the P site); every E-P-A tripeptide; motif classes; profiles centred on PPP, PPG, PPD and PP<br>**2.3** Gene-level footprint change by proline class<br>**2.4** Ribosome queueing before the first PPP<br>**2.5** Gene-level pause index at PP sites<br>**2.2c / 2.5** Similarity between all comparisons |
 
 **Comparisons** are read from `rpf_density_contrasts.tsv`, the same file used by diricore (see Inputs). Each comparison is a pair of samples, test vs reference. Heatmaps 2.2c and 2.5 show how similar all comparisons are to each other: for example, replicates, time points, or a condition vs a positive control.
 
@@ -128,9 +129,9 @@ Every figure is saved as PNG and PDF, and every figure has a table with the unde
 
 | Readout | Where | Less eIF5A activity | Proline shortage |
 |---|---|---|---|
-| Pausing with Pro at the P **and** A sites | A2, 2.2 | ↑ | ↑ (weaker) |
-| Pausing with Pro at the A site only | A2, 2.2 | ≈ | ↑ |
-| Pro occupancy at the A site | A1, 1.3 | ↑ (modest) | ↑ |
+| Pausing with the 2nd Pro of PP-X in the P site (X in the A site; position +1) | A2, 2.2d | ↑ | ≈ |
+| Pro occupancy at the A site (P site one codon before a Pro) | A1, 1.3 | ≈ | ↑ |
+| Pausing with Pro at the A site only | A2, 2.2b | ≈ | ↑ |
 | CDS termination peak | A1, 1.2 | ↑ | ≈ |
 | Footprints on PPP genes vs genes without PP | A2, 2.3 | ↑ | ↑ |
 | Downstream/upstream density around the first PPP | A2, 2.4 | ↓ | ↓ |
@@ -150,6 +151,7 @@ How to interpret a comparison:
   - P-values and confidence intervals measure how consistent the effect is across sites or transcripts within that comparison. They do not capture biological variability.
   - Without replicates, read the results as exploratory. With replicates, check that the effects agree; the similarity heatmaps (2.2c, 2.5) help with this.
   - Comparisons that share a reference sample are partly correlated in these heatmaps because of that shared sample.
+- **PPP motifs** often lie in repetitive Pro-rich stretches with few uniquely mapped reads; rely mainly on PPG, PPD and PP.
 - **Low-depth samples.** If a shallow sample leaves too few transcripts after filtering, lower `MIN_BODY_DENSITY` at the top of the script.
 - **Transcriptome BAMs.** Reads mapping to several isoforms are kept, as in riboWaltz. Each gene is analysed on a single transcript, the one with the most CDS P-sites, so no read is counted twice within a gene.
 - **Validation.** The script was tested on simulated data with known pauses. It recovered the planted effects, and transcriptome and genome BAM inputs gave identical results.
