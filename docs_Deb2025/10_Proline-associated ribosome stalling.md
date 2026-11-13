@@ -78,7 +78,7 @@ Two separate analyses, each with its own output folder:
 Each comparison is one test sample vs one reference sample.
 
 1. **One transcript per gene:** the one with the most CDS P-sites.
-2. **Coverage filter:** a transcript is used only if both samples have ≥ 64 P-sites in the CDS body and ≥ 0.25 P-sites per codon. The body excludes the first 15 and last 5 codons.
+2. **Coverage filter:** a transcript is used only if both samples have ≥ 64 P-sites in the CDS body and ≥ 0.25 P-sites per codon. The body excludes the first 15 and last 5 codons, so that initiation and termination peaks do not distort the normalisation; both numbers are adjustable.
 3. **Normalisation within each gene:** P-sites at each codon are divided by the mean P-sites per codon of that gene's CDS body. A value of 1 = an average codon of that gene, so differences in gene expression between samples cancel out.
 4. **Codon by codon:** each occurrence of a motif, or each codon with a given amino acid at the E, P or A site, is a *site*. The same site is compared between test and reference.
 5. **Pooling across genes:**
@@ -154,6 +154,10 @@ The three positional arguments are the same as in the riboWaltz script. All flag
 | `--price_fdr` | `0.05` | FDR for PRICE ORFs (BH on `p value`) |
 | `--source` | `transcriptome_bam` | `genome_bam` = genome BAMs given to PRICE, as a sensitivity check<br>`ribowaltz_rds` = saved `psite_info()` output |
 | `--ribowaltz_offsets` | auto | Offsets table path; `none` = estimate offsets |
+| `--min_body_psites` | `64` | CDS-body P-sites a transcript needs in both samples of a comparison |
+| `--min_body_density` | `0.25` | Mean P-sites per codon it needs in both samples; lower = more transcripts, noisier codon-level estimates |
+| `--skip_start` / `--skip_end` | `15` / `5` | Codons excluded after the start and before the stop (initiation and termination peaks); `0` / `0` = whole CDS |
+| `--min_body_psites` / `--min_body_density` | `64` / `0.25` | Coverage a transcript needs in both samples of a comparison; lower = more transcripts but noisier |
 | `--min_frame0` | `0.45` | Keep read lengths with ≥ this fraction of P-sites in frame 0; `0` keeps all lengths |
 | `--contrasts` | metadata file | Comparisons file |
 | `--contrast_order` | `test_ref` | Column order in the comparisons file; `ref_test` if the reference comes first |
@@ -221,6 +225,6 @@ How to interpret a comparison:
   - Without replicates, read the results as exploratory. With replicates, check that the effects agree; the similarity heatmaps (2.2c, 2.5) help with this.
   - Comparisons that share a reference sample are partly correlated in these heatmaps because of that shared sample.
 - **PPP motifs** often lie in repetitive Pro-rich stretches with few uniquely mapped reads; rely mainly on PPG, PPD and PP.
-- **Low-depth samples.** If a shallow sample leaves too few transcripts after filtering, lower `MIN_BODY_DENSITY` at the top of the script.
+- **Which transcripts are used.** Only one transcript per gene is used, the one with the most CDS P-sites, because transcriptome BAMs report each read once per compatible isoform. Only CDS with an AUG start, an in-frame stop and ≥ 100 codons are kept. In each comparison, a transcript is used only if both samples pass the coverage filter, because codon-level estimates from sparse genes are dominated by zeros and noise. With shallow libraries, try `--min_body_density 0.1 --min_body_psites 32` as a sensitivity check.
 - **Transcriptome BAMs.** Reads mapping to several isoforms are kept, as in riboWaltz. Each gene is analysed on a single transcript, the one with the most CDS P-sites, so no read is counted twice within a gene.
 - **Validation.** The script was tested on simulated data with known pauses. It recovered the planted effects, and transcriptome and genome BAM inputs gave identical results.
