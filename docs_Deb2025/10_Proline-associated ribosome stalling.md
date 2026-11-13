@@ -27,6 +27,26 @@ Results are written to `$BASE_DIR/<projid>/analysis/output/eIF5A_pausing/all/`. 
 
 **General question:** does a condition cause ribosome stalling at proline motifs, and does it resemble a known eIF5A inhibitor or proline limitation?
 
+## Proline motifs
+
+Motifs use the one-letter amino-acid code: **P** = proline, **G** = glycine, **D** = aspartate.
+
+| Motif | Meaning | Why it is analysed |
+|---|---|---|
+| **PP** | two consecutive prolines (any context) | the general Pro-Pro stall |
+| **PPP** | Pro-Pro-Pro | strongest stall; often in repetitive Pro-rich stretches with few uniquely mapped reads |
+| **PPG** | Pro-Pro-Gly | among the motifs most dependent on eIF5A |
+| **PPD** | Pro-Pro-Asp | among the motifs most dependent on eIF5A |
+
+**Positions.** Positions are counted in codons from the first residue of the motif, and they always say which codon is in the **P site**; the A site is one codon further. Example for PPG:
+
+| Position | P site | A site | Reads |
+|---|---|---|---|
+| −1 | residue before the motif | 1st Pro | proline limitation |
+| 0 | 1st Pro | 2nd Pro | proline limitation (Pro-Pro bond) |
+| **+1** | **2nd Pro** | **G** | **canonical eIF5A stall** |
+| +2 | G | next residue | – |
+
 ## What it does
 
 Two separate analyses, each with its own output folder:
@@ -37,6 +57,31 @@ Two separate analyses, each with its own output folder:
 | **A2 — Proline genes** | Genes classified by Pro motifs: PPP / PP only / no PP | **2.1** Pro-motif counts per gene<br>**2.2** Pausing at Pro motifs, position by position (eIF5A readout = 2nd Pro in the P site); every E-P-A tripeptide; motif classes; profiles centred on PPP, PPG, PPD and PP<br>**2.3** Gene-level footprint change by proline class<br>**2.4** Ribosome queueing before the first PPP<br>**2.5** Gene-level pause index at PP sites<br>**2.2c / 2.5** Similarity between all comparisons |
 
 **Comparisons** are read from `rpf_density_contrasts.tsv`, the same file used by diricore (see Inputs). Each comparison is a pair of samples, test vs reference. Heatmaps 2.2c and 2.5 show how similar all comparisons are to each other: for example, replicates, time points, or a condition vs a positive control.
+
+## How a comparison is computed
+
+Each comparison is one test sample vs one reference sample.
+
+1. **One transcript per gene:** the one with the most CDS P-sites.
+2. **Coverage filter:** a transcript is used only if both samples have ≥ 64 P-sites in the CDS body and ≥ 0.25 P-sites per codon. The body excludes the first 15 and last 5 codons.
+3. **Normalisation within each gene:** P-sites at each codon are divided by the mean P-sites per codon of that gene's CDS body. A value of 1 = an average codon of that gene, so differences in gene expression between samples cancel out.
+4. **Codon by codon:** each occurrence of a motif, or each codon with a given amino acid at the E, P or A site, is a *site*. The same site is compared between test and reference.
+5. **Pooling across genes:**
+   - Effect = log2(mean density in test / mean density in reference) over all sites from all genes.
+   - Paired Wilcoxon test over sites.
+   - Effects are also shown relative to codons without Pro. Because each gene's mean is 1, extra ribosomes at some codons slightly lower all the others.
+
+Steps 1–3 are shared by all readouts. What changes is the unit that is compared:
+
+| Readout | Unit compared | Statistic |
+|---|---|---|
+| 1.2 start/stop peaks | normalised profile of each transcript, averaged | peak change; 95% bootstrap CI over transcripts |
+| 1.3 occupancy by amino acid | every codon with that amino acid at E, P or A | log2 ratio of means |
+| 1.4 uORF start/stop | P-sites summed over all uORFs | change of stop/start ratio; bootstrap CI over uORFs |
+| 2.2 motif pausing | each motif occurrence, at each position | log2 ratio of means; paired Wilcoxon over sites |
+| 2.3 gene classes | each gene (CDS P-sites per million) | log2 change per gene; Wilcoxon PPP genes vs no-PP genes |
+| 2.4 queueing | each gene (density after/before the first PPP) | change per gene; Wilcoxon vs control genes |
+| 2.5 gene pause index | each gene (mean density at its PP sites) | log2 ratio per gene |
 
 ## Inputs
 
