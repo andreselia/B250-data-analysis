@@ -55,9 +55,23 @@ Two separate analyses, each with its own output folder:
 |---|---|---|
 | **A1 — CDS** | All coding genes | **1.1** P-site QC (read lengths, 3-nt periodicity)<br>**1.2** Start/stop metaprofiles; change of initiation and termination peaks<br>**1.3** Ribosome occupancy by amino acid and codon at the E, P and A sites (comparable to diricore)<br>**1.4** uORF start vs stop peaks (uses PRICE ORFs, optional) |
 | **A2 — Proline genes** | Genes classified by Pro motifs: PPP / PP only / no PP | **2.1** Pro-motif counts per gene<br>**2.2** Pausing at Pro motifs, position by position (eIF5A readout = 2nd Pro in the P site); every E-P-A tripeptide; motif classes; profiles centred on PPP, PPG, PPD and PP<br>**2.3** Gene-level footprint change by proline class<br>**2.4** Ribosome queueing before the first PPP<br>**2.5** Gene-level pause index at PP sites<br>**2.2c / 2.5** Similarity between all comparisons |
-| **A3 — Motif search** | All genes, every motif | **3.1** Unbiased search: every tripeptide (E-P-A) and dipeptide (P-A) ranked by change in pausing (paired Wilcoxon, FDR), to see where stalling concentrates without choosing motifs in advance |
+| **A3 — Motif search** | All genes, every motif | **3.1** Unbiased search: every tripeptide (E-P-A) and dipeptide (P-A) ranked by change in pausing (paired Wilcoxon, FDR), to see where stalling concentrates without choosing motifs in advance<br>**3.2** Follow-up of each significant motif: number of sites and genes, % of sites that go up, share of the increase from the top gene, and a profile around the motif |
 
 **Comparisons** are read from `rpf_density_contrasts.tsv`, the same file used by diricore (see Inputs). Each comparison is a pair of samples, test vs reference. Heatmaps 2.2c and 2.5 show how similar all comparisons are to each other: for example, replicates, time points, or a condition vs a positive control.
+
+## How the P site is assigned
+
+1. **Read the alignments.** For each footprint the script takes the transcript, the 5′ end and the read length from the transcriptome BAM.
+   - Only reads 25–35 nt long and on the sense strand are kept.
+   - With `--source genome_bam`, the 5′ end is mapped from the genome onto the transcript.
+2. **Offset per sample and read length.** The offset is the distance from the 5′ end to the first nucleotide of the P-site codon.
+   - **riboWaltz offsets:** taken from riboWaltz (`psite_offset.tsv`, column `corrected_offset_from_5`) when that file exists.
+   - **Estimated offsets:** otherwise, for reads whose 5′ end lies 8–18 nt upstream of an annotated start codon, the most frequent distance to the start codon. These reads come from initiating ribosomes, which carry the AUG in the P site.
+3. **P site = 5′ end + offset.** For example, a 29-nt read starting at position 100 with offset 12 has its P site at 112.
+4. **Periodicity filter.** A read length is kept only if ≥ 45% of its P-sites in the CDS fall in frame 0 and it has ≥ 500 CDS reads (`--min_frame0`).
+5. **Codon.** codon = (P site − CDS start) / 3 + 1, rounded down.
+
+**Check.** In the CDS metaprofiles (1.2), the initiation peak must sit at position 0 and the termination peak at −3. The offsets used are written to the log ("P-site offsets used") and to `A1_CDS/tables/1.1_psite_offsets.tsv`.
 
 ## How a comparison is computed
 
@@ -169,8 +183,8 @@ eIF5A_pausing/<bam_type>/
     ├── figures/                # 2.2 motif profiles, classes and similarity, 2.3 gene classes, 2.4 queueing, 2.5 similarity
     └── tables/
 └── A3_motif_search/
-    ├── figures/                # 3.1 volcano of every tripeptide
-    └── tables/                 # 3.1 every tripeptide and dipeptide with change, p and FDR
+    ├── figures/                # 3.1 volcano of every tripeptide; 3.2 profiles of significant motifs
+    └── tables/                 # 3.1 every tripeptide and dipeptide (change, p, FDR); 3.2 summary and sites of significant motifs
 ```
 
 Every figure is saved as PNG and PDF, and every figure has a table with the underlying numbers.
@@ -194,6 +208,7 @@ How to interpret a comparison:
    - Motifs with Pro in the A site (`xxP`) point to proline limitation.
    - Motifs with Pro in the P and A sites (`xPP`) point to reduced eIF5A activity.
    - Motifs one codon later (e.g. `PGx`) show where the ribosomes actually sit.
+   - A real pause (3.2) rises in most sites (e.g. > 70%), is spread over many genes (no single gene dominates the increase) and shows a peak at 0 in its profile. A large change in a few sites or genes is more likely noise.
 4. **uORFs (1.4).**
    - A stop/start ratio above 0 means ribosomes leave uORFs more slowly (termination).
    - A ratio below 0 means relatively more initiation at uORFs.
