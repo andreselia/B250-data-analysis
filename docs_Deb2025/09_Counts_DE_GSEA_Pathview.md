@@ -438,14 +438,14 @@ $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_
 └── ...
 ```
 
-## Gene Set Enrichment Analysis (KEGG)
-`gsea_analysis.r` / `run_gsea.sh` -- 
+## Gene Set Enrichment Analysis
+`gsea_analysis.r` / `run_gsea.sh`
 
 ### What it does
 
-Runs preranked GSEA (via `fgsea`) against the full KEGG canonical pathway
-collection (`msigdbr`, category `C2` / `CP:KEGG`). It reuses the fold-change
-tables already produced by `deseq2_analysis.r` -- no data is recomputed.
+Runs preranked GSEA (via `fgsea`) against one or more MSigDB collections. It
+reuses the fold-change tables already produced by `deseq2_analysis.r` -- no
+data is recomputed.
 
 For a given comparison, it looks for, in order:
 
@@ -459,16 +459,58 @@ For a given comparison, it looks for, in order:
    the resulting p-values/NES should be interpreted as exploratory only.
 
 > Because this step depends on the `stat` column, never overwrite it with
-> shrunken values in `results_*.tsv` — `ashr` and `apeglm` do not return a
-> `stat`, and GSEA would fall back or fail.
+> shrunken values in `results_*.tsv` -- `ashr` and `apeglm` do not return a
+> `stat`, and the script now stops with an explicit error if it is missing.
 
-### Two run modes
+Before testing, the ranked list is cleaned: `NA` values dropped, duplicated
+gene symbols collapsed to the entry with the largest absolute statistic, and
+the fraction of tied values reported (`fgsea` handles ties, but a heavily tied
+ranking gives a less stable NES). The cleaned ranking is also written out as
+`ranked_genes_*.rnk`, so it can be reused in GSEA desktop or tested against
+any other gene set file without re-running anything.
+
+### Collections
+
+The 7th argument is a comma-separated list of MSigDB collections. Default is
+`KEGG`, so existing commands keep their old behaviour.
+
+| Name | MSigDB | Notes |
+|---|---|---|
+| `HALLMARK` | H | ~50 curated sets, low redundancy, the best general default |
+| `KEGG` | C2 `CP:KEGG` | Metabolic and signalling pathways |
+| `REACTOME` | C2 `CP:REACTOME` | Large, finely curated pathway tree |
+| `WIKIPATHWAYS` | C2 `CP:WIKIPATHWAYS` | |
+| `BIOCARTA` | C2 `CP:BIOCARTA` | |
+| `PID` | C2 `CP:PID` | |
+| `CP` | C2 `CP:*` | Every canonical pathway source at once |
+| `GOBP` | C5 `GO:BP` | Biological process |
+| `GOCC` | C5 `GO:CC` | Cellular component |
+| `GOMF` | C5 `GO:MF` | Molecular function |
+| `GO` | C5 `GO:*` | All three GO branches |
+| `TFT` | C3 `TFT:*` | Transcription factor targets |
+| `ONCOGENIC` | C6 | Oncogenic signatures |
+
+Each collection gets its own results table, NES barplot and enrichment curve,
+and **its own multiple-testing correction**. This is deliberate: `padj` inside
+REACTOME is not comparable to `padj` inside HALLMARK, because the collections
+differ enormously in size and in internal redundancy. Compare collections by
+NES and by which genes drive the leading edge, not by `padj`.
+
+`minSize` is 15 for the GO branches and 10 elsewhere; GO carries thousands of
+small, highly overlapping sets and the lower floor makes the output unreadable
+without changing which large terms come out.
+
+### The optional keyword filter
+
+The 5th argument adds a **second, restricted run inside every requested
+collection**, keeping only gene sets whose name matches a keyword.
 
 | `filter` argument | Behavior |
 |---|---|
-| omitted / empty (default) | Only the **total** KEGG run (all ~186 canonical pathways tested) |
-| `AA` | Also runs a **second**, restricted GSEA against only the KEGG pathways whose name matches an amino-acid-related keyword (built-in list: the 20 amino acids + `AMINO_ACID` + `AMINOACYL_TRNA`) |
-| any other string | Treated as comma-separated **custom keyword(s)** for the restricted run, e.g. `METABOLISM` for a much broader metabolic filter, or `GLUTAMINE,ASPARTATE` for a narrower custom subset |
+| omitted / empty (default) | Only the full run per collection |
+| `AA` | Built-in amino acid list: the 20 amino acids + `AMINO_ACID` + `AMINOACYL_TRNA` |
+| `PA` | Built-in polyamine list: `POLYAMINE`, `SPERMIDINE`, `SPERMINE`, `PUTRESCINE`, `ORNITHINE`, `ARGININE_AND_PROLINE`, `HYPUSINE`, translation elongation/initiation, `METHIONINE` |
+| any other string | Comma-separated custom keyword(s), e.g. `METABOLISM`, or `GLUTAMINE,ASPARTATE` |
 
 ### Requirements
 
@@ -476,12 +518,25 @@ For a given comparison, it looks for, in order:
 install.packages(c("msigdbr", "fgsea"))
 ```
 
+The script is written against both the old and the new `msigdbr` API and
+detects which one is installed at runtime. Version 10.0 renamed the arguments
+`category` / `subcategory` to `collection` / `subcollection`, and the returned
+columns `gs_cat` / `gs_subcat` to `gs_collection` / `gs_subcollection`; a
+script hard-coded to either spelling breaks on the other.
+
+It also handles the KEGG rename. MSigDB 2023.1 renamed `CP:KEGG` to
+`CP:KEGG_LEGACY` and added `CP:KEGG_MEDICUS`, which is a **different
+curation**, not an update -- combining them double-counts overlapping
+pathways. The script reports which KEGG subcollections your installation
+offers and picks legacy first, matching what earlier runs of this pipeline
+used. The choice is printed in the job log.
+
 ### Usage
 
 ```bash
 bsub -q medium -R "rusage[mem=15G]" \
   $BASE_DIR/software/counts/run_gsea.sh \
-  <project_id> <bam_type> <contrast_table_name> <groupB_vs_groupA> [filter] [species]
+  <project_id> <bam_type> <contrast_table_name> <groupB_vs_groupA> [filter] [species] [collections]
 ```
 
 | Argument | Description | Default |
@@ -490,39 +545,59 @@ bsub -q medium -R "rusage[mem=15G]" \
 | `bam_type` | Must match the `bam_type` used upstream | required |
 | `contrast_table_name` | Same contrast table name used in `run_deseq2.sh` | required |
 | `groupB_vs_groupA` | Comparison label exactly as it appears in the `deseq2_analysis.r` output filenames, e.g. `24hr_vs_Ctrl`, or with a split variable `gc7_vs_Ctrl_in_pro` / `gc7_vs_Ctrl_sen_minus_pro` | required |
-| `filter` | `""` (total only), `AA` (+ amino acid filter), or custom keyword(s) | `""` |
-| `species` | `msigdbr` species name | `Homo sapiens` (use `Mus musculus` for mouse) |
+| `filter` | `""` (no restricted run), `AA`, `PA`, or custom keyword(s) | `""` |
+| `species` | `msigdbr` species name | `Homo sapiens` |
+| `collections` | Comma-separated collection names from the table above | `KEGG` |
+
+Positional arguments cannot be skipped. To reach `collections` you must pass
+`filter` and `species` explicitly, using `""` for an empty filter.
 
 Examples:
 
 ```bash
-# Default: total KEGG only
+# Default: KEGG only, no filter (unchanged behaviour)
 bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_gsea.sh \
   47681 all_unique WP_contrast 24hr_vs_Ctrl
 
-# Total KEGG + amino acid metabolism filter
+# Four collections at once
 bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_gsea.sh \
-  47681 all_unique WP_contrast 24hr_vs_Ctrl AA
+  47681 all_unique WP_contrast 24hr_vs_Ctrl "" "Homo sapiens" "HALLMARK,KEGG,REACTOME,GOBP"
 
-# Total KEGG + broader metabolism filter (custom keyword)
+# Hallmark + Reactome, with the polyamine keyword filter applied inside each
 bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_gsea.sh \
-  47681 all_unique WP_contrast 24hr_vs_Ctrl METABOLISM
+  47681 all_unique WP_contrast 24hr_vs_Ctrl "PA" "Homo sapiens" "HALLMARK,REACTOME"
+
+# Mouse
+bsub -q medium -R "rusage[mem=15G]" $BASE_DIR/software/counts/run_gsea.sh \
+  47681 all_unique WP_contrast 24hr_vs_Ctrl "" "Mus musculus" "HALLMARK,KEGG"
 ```
 
 ### Output
 
 ```
 $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_name>/gsea_<groupB_vs_groupA>/
-├── gsea_KEGG_total_<contrast_table_name>_<groupB_vs_groupA>.tsv          # all ~186 pathways, sorted by p-value
-├── gsea_KEGG_total_top20_<contrast_table_name>_<groupB_vs_groupA>.pdf    # NES barplot, top 20
-├── gsea_aminoacid_metabolism_<contrast_table_name>_<groupB_vs_groupA>.tsv   # only if filter requested
-├── gsea_aminoacid_metabolism_<contrast_table_name>_<groupB_vs_groupA>.pdf  # NES barplot, all matched sets
-└── gsea_enrichment_curve_top_aminoacid_<contrast_table_name>_<groupB_vs_groupA>.pdf  # classic GSEA curve for the top hit in the filtered set
+├── ranked_genes_<contrast_table_name>_<comparison>.rnk            # the cleaned ranking, reusable
+├── gsea_<COLLECTION>_<contrast_table_name>_<comparison>.tsv       # one per collection
+├── gsea_<COLLECTION>_barplot_<contrast_table_name>_<comparison>.pdf       # top 20 by NES
+├── gsea_<COLLECTION>_curve_top_<contrast_table_name>_<comparison>.pdf     # enrichment curve, most significant set
+├── gsea_<COLLECTION>_filtered_*.tsv / _barplot_*.pdf / _curve_top_*.pdf   # only if a filter was requested
+├── gsea_summary_all_collections_<contrast_table_name>_<comparison>.tsv    # every collection, sorted by padj
+└── gsea_top5_per_collection_<contrast_table_name>_<comparison>.pdf        # only when >1 collection
 ```
 
 The `*.tsv` results include standard `fgsea` columns: `pathway`, `pval`,
 `padj`, `NES`, `ES`, `size`, and `leadingEdge` (semicolon-separated list of
-the genes driving the enrichment).
+the genes driving the enrichment). The combined summary adds a `collection`
+column.
+
+The job log ends with a one-line summary of the most significant hit in each
+collection, which is usually enough to decide where to look first.
+
+> **Filenames changed.** The previous version wrote `gsea_KEGG_total_*` and
+> `gsea_aminoacid_metabolism_*`. These are now `gsea_KEGG_*` and
+> `gsea_<COLLECTION>_filtered_*`. Nothing downstream reads them, but older
+> output folders will carry the old names.
+
 
 
 ## Changelog
@@ -547,3 +622,17 @@ are unaffected.
 which is an upstream property of `get_counts_symbols.sh`. For ribosome
 profiling this pools 5'UTR (uORF) reads into the gene total. CDS-restricted
 counts must be produced upstream.
+
+### gsea_analysis.r and run_gsea.sh
+
+| # | Change |
+|---|---|
+| 1 | Any MSigDB collection can now be tested, not only KEGG: Hallmark, Reactome, GO (BP/CC/MF), WikiPathways, BioCarta, PID, TFT and C6, singly or several at once, via a new 7th argument. Default stays `KEGG`. |
+| 2 | `run_gsea.sh` now forwards that 7th argument. The previous wrapper stopped at `species`, so a collections argument would have been silently dropped and every run would have stayed on KEGG. |
+| 3 | Written against both the old and the new `msigdbr` API, detected at runtime. |
+| 4 | Handles the MSigDB 2023.1 KEGG rename (`CP:KEGG` to `CP:KEGG_LEGACY`, plus the separate `CP:KEGG_MEDICUS`), reporting and choosing rather than returning an empty result. |
+| 5 | Each collection is corrected for multiple testing separately, and a combined cross-collection summary table plus a top-5-per-collection plot are written. |
+| 6 | The ranked list is cleaned (`NA` dropped, duplicate symbols collapsed, ties reported) and exported as `.rnk` for reuse. |
+| 7 | Stops with an explicit error when `results_*.tsv` has no `stat` column, instead of failing obscurely. |
+| 8 | The keyword filter now runs inside every requested collection, and gained a built-in `PA` polyamine list alongside `AA`. |
+| 9 | Barplot significance colouring now uses `padj` everywhere; the filtered plot previously used raw `pval`, so the same gene set could look significant in one figure and not in the other. |
