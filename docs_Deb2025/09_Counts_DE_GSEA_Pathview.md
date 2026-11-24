@@ -28,6 +28,14 @@ Transcript-to-gene map used:
 
   /omics/groups/OE0532/internal/....//47681/analysis/output/counts/all_unique/transcript_to_gene.hg19.tsv
 
+> **Counts are whole-gene, UTRs included.** For RNA-seq this is the usual
+> thing to want. For **ribosome profiling** it means 5'UTR reads (uORFs,
+> upstream initiation) are pooled into the gene total, so a gene whose
+> regulation happens through a uORF can look unchanged — or change in the
+> *opposite* direction to its CDS. If that is the question, produce
+> CDS-restricted counts here, upstream; nothing downstream can correct for
+> it.
+
 
 ## Diff expr analysis
 
@@ -42,10 +50,11 @@ Transcript-to-gene map used:
    contrast table add a **batch** correction (`~batch + group`) or **split the
    comparisons** by another variable (e.g. `state`), including a test of
    whether the effect differs between its levels (interaction).
-4. Exports VST-normalized counts (all genes) and linear normalized counts.
-5. Draws a **PCA** of the samples (and, with a batch column, a second PCA with
+4. Saves the fitted `DESeq2` object as `dds_<contrast_table_name>.rds`.
+5. Exports VST-normalized counts (all genes) and linear normalized counts.
+6. Draws a **PCA** of the samples (and, with a batch column, a second PCA with
    the batch effect removed).
-6. For a user-supplied gene list: boxplot, row-z-score heatmap, and two QC
+7. For a user-supplied gene list: boxplot, row-z-score heatmap, and two QC
    histograms (all genes vs. selected genes, same x-axis) -- all covering
    every sample in the contrast table.
 
@@ -58,6 +67,11 @@ never confused with a real statistical result. With a split variable
 (e.g. `state`), "group" means every combination of that variable and
 `group`, and the log2FC are computed within each level (plus their
 difference when there are two levels).
+
+**Only 2 replicates?** Testing works, but the script prints a note: per-gene
+dispersion is then largely borrowed from the fitted trend and genome-wide
+`padj` is conservative. Prefer `log2FC_shrunk` for ranking and for any
+fold-change-colored figure, and see `padj_genelist` below.
 
 ### Contrast table format
 
@@ -130,6 +144,21 @@ Every combination of `state` and `group` becomes one level of the model
 A non-significant interaction does not show that the two effects are equal;
 interaction tests need more replicates than simple comparisons.
 
+> **The reference level of the split variable comes from ROW ORDER, not from
+> the `order` column.** `order` only sets the direction of `group`. The first
+> level of the split variable to appear in the table becomes the baseline,
+> which is why the label above reads `sen_minus_pro` and not the reverse.
+> Reordering rows silently flips the sign of every interaction. The script
+> now prints the chosen reference level and spells out how to read each
+> interaction label — **check the log before interpreting signs.**
+
+**Getting the other main effect.** With a split variable the script compares
+`group` levels *within* each stratum; it does not compare the strata to each
+other. To get that effect too, write a second contrast table with the roles
+swapped (what was `group` becomes `state` and vice versa). It fits exactly
+the same four cells, so this is not double testing — it just reports the
+other axis. The interaction comes out identical in magnitude.
+
 ### Gene list format
 
 ```bash
@@ -142,6 +171,45 @@ MT-ND1
 MT-ATP6
 GAPDH
 ```
+
+One gene symbol per line. Ignored: blank lines, whole-line comments
+(`# ...`), and **trailing inline comments after a symbol** — so an annotated
+list works directly:
+
+```
+# --- Cytoplasmic aminoacyl-tRNA synthetases ---
+AARS      # Ala   (current: AARS1)
+RARS      # Arg   (current: RARS1)
+```
+
+Duplicate symbols are collapsed, and the count of unique symbols is printed.
+
+> Earlier versions only skipped lines *starting* with `#`. Annotated lists
+> like the one above therefore matched nothing and silently produced empty or
+> truncated heatmaps. This never affected any DE statistic (see the note
+> below), only the gene-list plots.
+
+**Symbols must match the annotation build.** Many symbols were renamed in
+2018 while older builds (hg19 / GENCODE v19) keep the old ones — `RACK1` is
+`GNB2L1`, `CCN1`/`CCN2` are `CYR61`/`CTGF`, and so on. Check a list before
+running:
+
+```bash
+cut -f2 $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/transcript_to_gene.hg19.tsv \
+  | sort -u > /tmp/hg19_symbols.txt
+sed 's/#.*//' my_gene_list.txt | tr -d ' \t' | grep -v '^$' \
+  | grep -vxFf /tmp/hg19_symbols.txt
+```
+
+Anything printed is a symbol that does not exist in that annotation.
+
+**The gene list does not affect any DE statistic.** It only drives the
+boxplot, the heatmap, the `selected_genes_*` tables and the `padj_genelist`
+column. The `results_*.tsv` fold changes, p-values and genome-wide `padj` are
+identical whatever list you pass, so there is no need to re-run the pipeline
+to look at a different set of genes — subset
+`normalized_transformed_counts_*.tsv` yourself, or re-run only if you want
+the plots.
 
 ### Usage
 
@@ -170,6 +238,7 @@ bsub -q medium -R "rusage[mem=30G]" $BASE_DIR/software/counts/run_deseq2.sh \
 ```
 $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_name>/
 ├── raw_counts_matrix_<contrast_table_name>.tsv
+├── dds_<contrast_table_name>.rds                                # fitted DESeq2 object
 ├── results_<contrast_table_name>_<comparison>.tsv               # or log2FC_only_NO_PVALUE_* if no replicates
 ├── normalized_transformed_counts_<contrast_table_name>.tsv      # VST, all genes
 ├── normalized_counts_linear_<contrast_table_name>.tsv
@@ -188,6 +257,61 @@ $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_
 plain contrast table name.) All paths, and the number of genes with
 `padj < 0.05` per comparison, are printed in the `bsub` job log.
 
+#### Columns of `results_*.tsv`
+
+Standard `DESeq2` columns (`baseMean`, `log2FoldChange`, `lfcSE`, `stat`,
+`pvalue`, `padj`) plus:
+
+| Column | Meaning |
+|---|---|
+| `log2FC_shrunk` | Shrunken fold change (`lfcShrink`, `ashr`). Low-count genes get large, unstable `log2FoldChange` values that dominate fold-change-ranked lists and fold-change-colored diagrams; shrinkage pulls them toward zero in proportion to their uncertainty. Only present if `ashr` is installed. |
+| `lfcSE_shrunk` | Standard error of the shrunken estimate. |
+| `padj_genelist` | BH correction computed **over the supplied gene list only**. `NA` for every gene outside it. |
+
+`ashr` is used rather than `apeglm` because `apeglm` cannot handle arbitrary
+numeric contrasts, which is exactly what the interaction terms are.
+
+`log2FoldChange` and `stat` keep their original unshrunken values — the new
+columns are additions, never replacements. This matters: `gsea_analysis.r`
+ranks on `stat`, which `ashr` does not return, so overwriting these would
+break the GSEA step silently. If you compute your own shrinkage downstream,
+add it as a column; do not overwrite.
+
+**When to report `padj_genelist`.** Genome-wide BH over ~15–20k genes is the
+right default for a discovery screen, but it is the wrong denominator for a
+panel specified *before* seeing the data: those genes are a pre-registered
+hypothesis, not a screen. With few replicates the difference in power is
+large. It is only defensible if the list really was fixed in advance — if you
+add genes *because* you saw them come up, go back to the genome-wide `padj`,
+and say in the methods which one you used and why.
+
+#### Missing genes in the log
+
+Symbols from the gene list that do not make it into the plots are reported in
+two separate categories, because they mean completely different things:
+
+- **Absent from the annotation entirely** — wrong or outdated symbol. Fix it.
+  Reported right after the counts matrix is built.
+- **Present but removed by the low-count filter** (`rowSums < 10`) — the gene
+  is genuinely not expressed in these samples. That is a real result, not an
+  error. Reported with the gene-list plots.
+
+#### Reusing the fitted object
+
+`dds_<contrast_table_name>.rds` lets you add contrasts, try other shrinkage
+estimators, or redraw plots without re-running the cluster job:
+
+```r
+library(DESeq2)
+dds <- readRDS("dds_WP_contrast.rds")
+resultsNames(dds)                      # available coefficients
+res <- results(dds, contrast = c("group", "24hr", "Ctrl"))
+```
+
+With a split variable, contrasts are numeric vectors over the `combo`
+coefficients rather than `c("group", ...)` triples — read `resultsNames(dds)`
+first.
+
 **PCA.** Computed on the VST counts of the 500 most variable genes (as
 `DESeq2::plotPCA`). Points are colored by `group`, shaped by the split
 variable (or by `batch`), and labeled with the `sampleid`. With a `batch`
@@ -199,7 +323,13 @@ the coordinates of the first principal components.
 ### Requirements
 
 R with `DESeq2`, `ggplot2`, `pheatmap` (`module load R/4.4.3-GCCcore-14.1.0`).
-Optional: `limma`, for the batch-corrected PCA.
+
+Optional:
+- `limma` — batch-corrected PCA.
+- `ashr` — `log2FC_shrunk` / `lfcSE_shrunk` columns (`install.packages("ashr")`).
+
+Both are detected at runtime: if missing, the script prints a note and
+continues without that output.
 
 
 ## KEGG pathway visualization
@@ -220,6 +350,12 @@ For a given comparison, it looks for, in order:
    (produced when you had no replicates -- uses the `log2FC` column).
 
 Whichever exists is used automatically; you don't need to specify which one.
+
+> Note that it colors by the **unshrunken** `log2FoldChange`. With few
+> replicates, low-count genes can show up as intensely colored nodes on
+> essentially no evidence. Cross-check any striking node against `baseMean`,
+> `padj` and `log2FC_shrunk` in the results table before reading anything
+> into it.
 
 By default it plots a curated set of **amino acid metabolism/biosynthesis**
 KEGG pathways:
@@ -276,6 +412,11 @@ bsub -q medium -R "rusage[mem=15G]" \
 | `pathway_ids` | Comma-separated KEGG pathway IDs (no species prefix) | amino acid pathway list above |
 | `species` | KEGG species code | `hsa` (human); use `mmu` for mouse |
 
+> `bam_type` and `contrast_table_name` must match the `run_deseq2.sh` call
+> exactly, and `groupB_vs_groupA` must match the generated filename character
+> for character. Check the DESeq2 job log for the exact comparison labels
+> before launching — a mismatch just means no input file is found.
+
 Examples:
 
 ```bash
@@ -316,6 +457,10 @@ For a given comparison, it looks for, in order:
    (produced when you had no replicates) -- ranks genes by plain `log2FC` as
    a fallback. A warning is printed: without proper statistical weighting,
    the resulting p-values/NES should be interpreted as exploratory only.
+
+> Because this step depends on the `stat` column, never overwrite it with
+> shrunken values in `results_*.tsv` — `ashr` and `apeglm` do not return a
+> `stat`, and GSEA would fall back or fail.
 
 ### Two run modes
 
@@ -378,3 +523,27 @@ $BASE_DIR/<project_id>/analysis/output/counts/<bam_type>/deseq2_<contrast_table_
 The `*.tsv` results include standard `fgsea` columns: `pathway`, `pval`,
 `padj`, `NES`, `ES`, `size`, and `leadingEdge` (semicolon-separated list of
 the genes driving the enrichment).
+
+
+## Changelog
+
+### deseq2_analysis.r
+
+All changes are backward compatible: `results_*.tsv` keeps every original
+column with its original values, so `pathway_plot.r` and `gsea_analysis.r`
+are unaffected.
+
+| # | Change |
+|---|---|
+| 1 | Fitted object saved as `dds_<contrast_table_name>.rds`, so extra contrasts / shrinkage / re-plots no longer require re-running the pipeline. |
+| 2 | Gene list parser now strips trailing inline comments (`GENE   # note`) and collapses duplicates. Annotated lists previously matched nothing and produced empty or truncated heatmaps. |
+| 3 | Missing gene-list symbols are reported in two categories — absent from the annotation vs. removed by the low-count filter — which the old single warning could not distinguish. |
+| 4 | New `log2FC_shrunk` / `lfcSE_shrunk` columns (`ashr`, optional). Unshrunken `log2FoldChange` and `stat` left untouched. |
+| 5 | New `padj_genelist` column: BH correction over the supplied gene list only. |
+| 6 | The split-variable reference level and the meaning of each interaction label are printed explicitly. Row order still determines the sign; it is now visible in the log. |
+| 7 | A note is printed when any group has exactly 2 samples. |
+
+**Known limitation, not fixed here:** counts are whole-gene including UTRs,
+which is an upstream property of `get_counts_symbols.sh`. For ribosome
+profiling this pools 5'UTR (uORF) reads into the gene total. CDS-restricted
+counts must be produced upstream.
